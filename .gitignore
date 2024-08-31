@@ -1,0 +1,7 @@
+node_modules
+.env
+build
+dist
+.next
+next-env.d.ts
+npm-debug.log*

@@ -8,7 +8,7 @@ interface codeState {
 }
 
 const useCodeStore = create<codeState>()((set) => ({
-  code: 'console.log("jainam gand mara")',
+  code: 'console.log("hello assign-sync!")',
   setCode: (newCode: string) => set({ code: newCode }),
   output: "",
   setOutput: (newOutput: string) => set({ output: newOutput }),

@@ -1,8 +1,8 @@
 "use client";
 import useCodeStore from "@/lib/codeStore";
 import Header from "./Header";
-const Console = () => {
-  const { output, setOutput } = useCodeStore();
+const Console = ({ output }: { output: string }) => {
+  const { setOutput } = useCodeStore();
   const clearConsole = () => {
     setOutput("");
   };

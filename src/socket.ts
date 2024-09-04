@@ -6,7 +6,7 @@ export default function useSocket(): Socket | null {
   const [isConnected, setIsConnected] = useState<boolean>(false);
   useEffect(() => {
     if (!socket) {
-      socket = io("http://localhost:3001");
+      socket = io("http://192.168.1.73:3001");
       socket.on("connect", () => {
         setIsConnected(true);
         console.log("Connected with socket id:", socket?.id);

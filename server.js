@@ -3,7 +3,8 @@ import { Server } from "socket.io";
 const httpServer = http.createServer();
 const io = new Server(httpServer, {
   cors: {
-    origin: "http://localhost:3000",
+    // origin: "http://localhost:3000",
+    origin: "*",
     methods: ["GET", "POST"],
     credentials: true,
   },
@@ -23,7 +24,8 @@ io.on("connection", (socket) => {
     console.log("A user disconnected:", socket.id);
   });
 });
-const PORT = process.env.PORT || 3001;
-httpServer.listen(PORT, () => {
+const PORT = 3001;
+const HOST = "0.0.0.0";
+httpServer.listen(PORT, HOST, () => {
   console.log(`Socket.io server is running on port ${PORT}`);
 });

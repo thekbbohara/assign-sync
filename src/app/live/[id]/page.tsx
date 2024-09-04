@@ -26,10 +26,13 @@ export default function HomePage() {
     }
   }, [socket]);
   useEffect(() => {
-    if (socket && code) {
-      socket.emit("send_code", code);
-    }
+    const TO_ID = setTimeout(() => {
+      if (socket && code) {
+        socket.emit("send_code", code);
+      }
+    }, 200);
     return () => {
+      clearTimeout(TO_ID);
       if (socket) {
         socket.off("send_code");
       }

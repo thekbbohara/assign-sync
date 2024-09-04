@@ -1,36 +1,17 @@
 "use client";
+import Console from "@/components/Console";
+import EditorJs from "@/components/Editor";
+import useCodeStore from "@/lib/codeStore";
+import React from "react";
 
-import { useEffect, useState } from "react";
-import { Socket } from "socket.io-client";
-import useSocket from "@/socket";
-
-export default function Home() {
-  const [code, setCode] = useState<string>("");
-  const socket: Socket | null = useSocket();
-
-  useEffect(() => {
-    if (socket) {
-      socket.on("recive_code", (data: string) => {
-        setCode(data);
-      });
-      // Clean up the listener on unmount
-      return () => {
-        socket.off("recive_code");
-      };
-    }
-  }, [socket]);
-
+const create = () => {
+  const { code, setCode, output } = useCodeStore();
   return (
-    <main>
-      <textarea
-        value={code}
-        onChange={(e) => {
-          if (socket) {
-            socket.emit("send_code", e.target.value);
-          }
-          setCode(e.target.value);
-        }}
-      ></textarea>
+    <main className="relative flex min-h-[100vh]">
+      <EditorJs code={code} setCode={setCode} />
+      <Console output={output} />
     </main>
   );
-}
+};
+
+export default create;

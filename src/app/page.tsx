@@ -10,7 +10,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <Code2 className="h-6 w-6 text-primary" />
-            <span className="text-xl font-bold">CodeSync</span>
+            <span className="text-xl font-bold">Assign-Sync</span>
           </div>
           <div className="flex items-center space-x-4">
             <Button variant="ghost" asChild>
@@ -35,7 +35,7 @@ export default function Home() {
             </p>
             <div className="flex items-center justify-center gap-4 pt-4">
               <Button size="lg" asChild>
-                <Link href="/assignments">Get Started</Link>
+                <Link href="/dashboard/assignments">Get Started</Link>
               </Button>
               <Button size="lg" variant="outline" asChild>
                 <Link href="/demo">View Demo</Link>

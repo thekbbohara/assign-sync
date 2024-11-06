@@ -13,11 +13,8 @@ export default function Home() {
             <span className="text-xl font-bold">Assign-Sync</span>
           </div>
           <div className="flex items-center space-x-4">
-            <Button variant="ghost" asChild>
-              <Link href="/login">Login</Link>
-            </Button>
             <Button asChild>
-              <Link href="/signup">Sign Up</Link>
+              <Link href="/sign-in">Sign In</Link>
             </Button>
           </div>
         </div>
@@ -35,7 +32,7 @@ export default function Home() {
             </p>
             <div className="flex items-center justify-center gap-4 pt-4">
               <Button size="lg" asChild>
-                <Link href="/dashboard/assignments">Get Started</Link>
+                <Link href="/sign-in">Get Started</Link>
               </Button>
               <Button size="lg" variant="outline" asChild>
                 <Link href="/demo">View Demo</Link>

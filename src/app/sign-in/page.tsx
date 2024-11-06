@@ -19,7 +19,7 @@ export default function LoginPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center space-x-2">
             <Code2 className="h-6 w-6 text-primary" />
-            <span className="text-xl font-bold">CodeSync</span>
+            <span className="text-xl font-bold">Assign Sync</span>
           </Link>
         </div>
       </nav>

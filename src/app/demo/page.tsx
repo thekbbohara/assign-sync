@@ -13,7 +13,7 @@ export default function DemoPage() {
             <span className="text-xl font-bold">CodeSync</span>
           </Link>
           <Button asChild>
-            <Link href="/signup">Try it Free</Link>
+            <Link href="/sign-in">Try it Free</Link>
           </Button>
         </div>
       </nav>

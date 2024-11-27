@@ -1,6 +1,5 @@
 "use client";
-
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -31,26 +30,58 @@ const formSchema = z.object({
   name: z.string().min(3, "Class name must be at least 3 characters"),
   description: z.string().min(10, "Description must be at least 10 characters"),
   subject: z.string().min(2, "Subject must be at least 2 characters"),
+  admin: z.string(),
 });
 
-export function CreateClassDialog() {
+export function CreateClassDialog({
+  admin,
+  setRefresh,
+}: {
+  admin?: string;
+  setRefresh: Dispatch<SetStateAction<boolean>>;
+}) {
   const [open, setOpen] = useState(false);
-  
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
       description: "",
       subject: "",
+      admin: "",
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    const myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+
+    const raw = JSON.stringify({
+      name: values.name,
+      subject: values.subject,
+      description: values.description,
+      admin: admin,
+    });
+
+    const requestOptions = {
+      method: "POST",
+      headers: myHeaders,
+      body: raw,
+    };
+
+    try {
+      const res = await fetch("/api/class", requestOptions);
+      const data = await res.json();
+      if (data.msg) {
+        form.reset();
+        setOpen(false);
+        toast.success(data.msg);
+        setRefresh(true);
+      }
+    } catch (e) {
+      console.log("err", e);
+      toast.error("Something went wrong.");
+    }
     // Here you would typically make an API call to create the class
-    console.log(values);
-    toast.success("Class created successfully!");
-    setOpen(false);
-    form.reset();
   }
 
   return (

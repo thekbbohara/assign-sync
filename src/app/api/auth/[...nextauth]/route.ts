@@ -21,20 +21,24 @@ const handler = NextAuth({
         try {
           token.accessToken = account.access_token!;
           token.username = profile.login; // GitHub username
-          await dbConnect()
-          const userExists = await UserModel.exists({ email: profile.email })
-          console.log({ userExists })
-          if (userExists) return token
+          await dbConnect();
+          const userExists = await UserModel.exists({ email: profile.email });
+          console.log({ userExists });
+          if (userExists) {
+            token._id = userExists._id;
+            return token;
+          }
           const newUser = new UserModel({
             email: profile.email,
             name: profile.name || profile.login,
             username: profile.login,
-            avatar: profile.avatar_url
-
-          })
-          await newUser.save()
+            avatar: profile.avatar_url,
+          });
+          const savedUser = await newUser.save();
+          token._id = savedUser._id;
+          console.log({ savedUser });
         } catch (err) {
-          console.log(err)
+          console.log(err);
         }
       }
       return token;
@@ -45,7 +49,7 @@ const handler = NextAuth({
       // Cast the `token` to the custom `JWT` type
       if (session.user) {
         // Attach the JWT token details to the session
-        session.user.id = token.sub!;
+        session.user.id = String(token._id);
         session.user.name = token.name!;
         session.user.email = token.email!;
         session.user.avatar = token.picture!;

@@ -28,13 +28,17 @@ export function Header() {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-56" align="end" forceMount>
-              <DropdownMenuItem >
+              <DropdownMenuItem>
                 <Link href={"/dashboard/profile"} className="flex w-full">
                   <User className="mr-2 h-4 w-4" />
                   <span>Profile</span>
                 </Link>
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => { signOut() }}>
+              <DropdownMenuItem
+                onClick={() => {
+                  signOut();
+                }}
+              >
                 <LogOut className="mr-2 h-4 w-4" />
                 <span>Log out</span>
               </DropdownMenuItem>

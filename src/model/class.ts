@@ -2,6 +2,7 @@ import { generateInviteCode } from "@/lib/geneateInviteCode";
 import { Model, model, models, ObjectId, Schema } from "mongoose";
 
 export interface IClass {
+  _id?: ObjectId;
   name: string;
   subject: string;
   description?: string;

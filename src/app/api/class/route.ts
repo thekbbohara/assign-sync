@@ -15,12 +15,12 @@ export const POST = async (req: Request) => {
 };
 
 export const GET = async (req: Request) => {
+  await dbConnect();
   const user = req.headers.get("user");
-
-  const classes = await Class.find({
-    $or: [{ admin: user }, { students: user }],
-  });
+  console.log({ user });
+  if (!user || user == undefined) return Response.json([]);
+  const classes = await Class.find({ admin: user });
 
   console.log({ classes });
-  return Response.json({ msg: null });
+  return Response.json(classes);
 };

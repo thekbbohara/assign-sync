@@ -69,7 +69,15 @@ export default function ClassesPage() {
                         View Class
                       </Link>
                     </Button>
-                    <Button variant="outline" size="icon">
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={() => {
+                        navigator.clipboard.writeText(
+                          `${process.env.NEXT_PUBLIC_URL}/dashboard/join?code=${classItem?.inviteCode}`,
+                        );
+                      }}
+                    >
                       <LinkIcon className="h-4 w-4" />
                     </Button>
                   </div>

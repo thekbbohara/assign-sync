@@ -20,7 +20,6 @@ export const GET = async (req: Request) => {
   // console.log({ user });
   if (!user || user == undefined) return Response.json([]);
   const classes = await Class.find({ admin: user });
-
   // console.log({ classes });
   return Response.json(classes);
 };

@@ -1,6 +1,19 @@
 import { generateInviteCode } from "@/lib/geneateInviteCode";
 import { Model, model, models, ObjectId, Schema } from "mongoose";
+import { IUser } from "./user";
+import { IAssignment } from "./assignment";
 
+export interface IStudent extends IUser {
+  _id: ObjectId;
+  joinedAt: Date;
+  completedAssignments: number;
+  totalAssignments: number;
+}
+export interface IAssignments extends IAssignment {
+  _id: ObjectId;
+  submissions: number;
+  totalStudents: number;
+}
 export interface IClass {
   _id?: ObjectId;
   name: string;
@@ -8,7 +21,8 @@ export interface IClass {
   description?: string;
   inviteCode: string;
   admin: ObjectId;
-  students?: ObjectId[];
+  students?: IStudent[];
+  assignments?: IAssignments[];
 }
 
 // Schema definition
@@ -18,7 +32,23 @@ const classSchema = new Schema<IClass>({
   description: { type: String, required: false },
   inviteCode: { type: String, required: true, unique: true },
   admin: { type: Schema.Types.ObjectId, ref: "User", required: true },
-  students: [{ type: Schema.Types.ObjectId, ref: "User", required: false }],
+  students: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      required: false,
+      unique: true,
+      default: [],
+    },
+  ],
+  assignments: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Assignment",
+      required: false,
+      default: [],
+    },
+  ],
 });
 
 classSchema.pre("save", async function (next) {
@@ -49,7 +79,9 @@ classSchema.pre("save", async function (next) {
   next(); // Ensure this is after your async operations
 });
 
-const Class =
-  (models.Class as Model<IClass>) || model<IClass>("Class", classSchema);
+// const Class =
+//   (models.Class as Model<IClass>) || model<IClass>("Class", classSchema);
+
+const Class = models.Class || model<IClass>("Class", classSchema);
 
 export default Class;

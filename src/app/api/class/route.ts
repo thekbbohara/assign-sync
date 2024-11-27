@@ -17,10 +17,10 @@ export const POST = async (req: Request) => {
 export const GET = async (req: Request) => {
   await dbConnect();
   const user = req.headers.get("user");
-  console.log({ user });
+  // console.log({ user });
   if (!user || user == undefined) return Response.json([]);
   const classes = await Class.find({ admin: user });
 
-  console.log({ classes });
+  // console.log({ classes });
   return Response.json(classes);
 };

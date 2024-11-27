@@ -23,7 +23,7 @@ export default function ClassesPage() {
     const getClasses = async () => {
       const res = await fetch("/api/class", {
         headers: {
-          user: userId,
+          user: userId!,
         },
       });
       const data: IClass[] = await res.json();

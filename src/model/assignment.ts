@@ -1,6 +1,6 @@
 import { model, Model, models, type ObjectId, Schema } from "mongoose";
 
-interface IAssignment extends Document {
+export interface IAssignment extends Document {
   title: string;
   description?: string;
   class: ObjectId;

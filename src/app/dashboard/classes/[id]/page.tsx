@@ -27,60 +27,35 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { UserPlus, Mail, Copy, Check } from "lucide-react";
-import { useState } from "react";
-
-const students = [
-  {
-    id: 1,
-    name: "John Doe",
-    email: "john@example.com",
-    joinedAt: "2024-01-15",
-    completedAssignments: 8,
-    totalAssignments: 10,
-  },
-  {
-    id: 2,
-    name: "Jane Smith",
-    email: "jane@example.com",
-    joinedAt: "2024-01-16",
-    completedAssignments: 7,
-    totalAssignments: 10,
-  },
-];
-
-const assignments = [
-  {
-    id: 1,
-    title: "JavaScript Basics",
-    dueDate: "2024-02-01",
-    submissions: 15,
-    totalStudents: 25,
-  },
-  {
-    id: 2,
-    title: "React Components",
-    dueDate: "2024-02-05",
-    submissions: 8,
-    totalStudents: 25,
-  },
-];
-
+import { useEffect, useState } from "react";
+import { IClass } from "@/model/class";
+import { useParams } from "next/navigation";
 export default function ClassDetailPage() {
   const [copied, setCopied] = useState(false);
-  const inviteCode = "WD101";
+  const [classDetail, setClassDetail] = useState<Partial<IClass>>({});
+  const params = useParams();
 
   const copyInviteCode = () => {
-    navigator.clipboard.writeText(inviteCode);
+    if (!classDetail.inviteCode) return;
+    navigator.clipboard.writeText(classDetail.inviteCode);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
 
+  useEffect(() => {
+    const fetchClassDetail = async () => {
+      const res = await fetch(`/api/class/${params.id}`);
+      const data = await res.json();
+      setClassDetail({ ...data.class });
+    };
+    fetchClassDetail();
+  }, []);
   return (
     <div className="p-6 space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold">Web Development 101</h1>
-          <p className="text-muted-foreground">Introduction to web development</p>
+          <h1 className="text-3xl font-bold">{classDetail.name}</h1>
+          <p className="text-muted-foreground">{classDetail?.description}</p>
         </div>
         <div className="flex space-x-2">
           <Dialog>
@@ -94,15 +69,20 @@ export default function ClassDetailPage() {
               <DialogHeader>
                 <DialogTitle>Invite Students</DialogTitle>
                 <DialogDescription>
-                  Share this code with your students or invite them directly via email.
+                  Share this code with your students or invite them directly via
+                  email.
                 </DialogDescription>
               </DialogHeader>
               <div className="space-y-4 pt-4">
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Class Code</label>
                   <div className="flex space-x-2">
-                    <Input value={inviteCode} readOnly />
-                    <Button variant="outline" size="icon" onClick={copyInviteCode}>
+                    <Input value={classDetail?.inviteCode} readOnly />
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={copyInviteCode}
+                    >
                       {copied ? (
                         <Check className="h-4 w-4" />
                       ) : (
@@ -112,7 +92,9 @@ export default function ClassDetailPage() {
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Email Invitation</label>
+                  <label className="text-sm font-medium">
+                    Email Invitation
+                  </label>
                   <div className="flex space-x-2">
                     <Input type="email" placeholder="student@example.com" />
                     <Button>
@@ -144,40 +126,48 @@ export default function ClassDetailPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {students.map((student) => (
-                  <TableRow key={student.id}>
-                    <TableCell>{student.name}</TableCell>
-                    <TableCell>{student.email}</TableCell>
-                    <TableCell>{student.joinedAt}</TableCell>
-                    <TableCell>
-                      {student.completedAssignments}/{student.totalAssignments} completed
-                    </TableCell>
-                  </TableRow>
-                ))}
+                {classDetail.students &&
+                  classDetail.students.length >= 1 &&
+                  classDetail.students.map((student) => (
+                    <TableRow key={String(student?._id)}>
+                      <TableCell>{student?.name}</TableCell>
+                      <TableCell>{student?.email}</TableCell>
+                      {/* <TableCell>{student?.joinedAt}</TableCell> */}
+                      <TableCell>
+                        {student?.completedAssignments}/
+                        {student?.totalAssignments} completed
+                      </TableCell>
+                    </TableRow>
+                  ))}
               </TableBody>
             </Table>
           </Card>
         </TabsContent>
         <TabsContent value="assignments">
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {assignments.map((assignment) => (
-              <Card key={assignment.id}>
-                <CardHeader>
-                  <CardTitle>{assignment.title}</CardTitle>
-                  <CardDescription>Due: {assignment.dueDate}</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex justify-between items-center">
-                    <div className="text-sm text-muted-foreground">
-                      {assignment.submissions}/{assignment.totalStudents} submitted
+            {classDetail.assignments &&
+              classDetail.assignments.length >= 1 &&
+              classDetail.assignments.map((assignment) => (
+                <Card key={String(assignment._id)}>
+                  <CardHeader>
+                    <CardTitle>{assignment.title}</CardTitle>
+                    <CardDescription>
+                      Due: {assignment?.dueDate?.toString()}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex justify-between items-center">
+                      <div className="text-sm text-muted-foreground">
+                        {assignment.submissions}/{assignment.totalStudents}{" "}
+                        submitted
+                      </div>
+                      <Button variant="outline" size="sm">
+                        View Details
+                      </Button>
                     </div>
-                    <Button variant="outline" size="sm">
-                      View Details
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+                  </CardContent>
+                </Card>
+              ))}
           </div>
         </TabsContent>
       </Tabs>

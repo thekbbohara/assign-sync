@@ -53,19 +53,23 @@ const JoinClassContent: React.FC<{ onSubmit: (e: FormEvent) => void }> = ({
 };
 
 const LoadingSkeleton = () => (
-  <Card className="w-full max-w-md">
-    <CardHeader>
-      <Skeleton className="h-8 w-3/4" />
-      <Skeleton className="h-4 w-full mt-2" />
-    </CardHeader>
-    <CardContent>
-      <div className="space-y-4">
-        <Skeleton className="h-4 w-1/4" />
-        <Skeleton className="h-10 w-full" />
-        <Skeleton className="h-10 w-full" />
-      </div>
-    </CardContent>
-  </Card>
+  <main className="min-h-[85vh] flex flex-col">
+    <div className="flex-1 flex items-center justify-center p-4">
+      <Card className="w-full max-w-md">
+        <CardHeader>
+          <Skeleton className="h-8 w-3/4" />
+          <Skeleton className="h-4 w-full mt-2" />
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <Skeleton className="h-4 w-1/4" />
+            <Skeleton className="h-10 w-full" />
+            <Skeleton className="h-10 w-full" />
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  </main>
 );
 
 export default function JoinClassPage() {

@@ -132,7 +132,9 @@ export default function ClassDetailPage() {
                     <TableRow key={String(student?._id)}>
                       <TableCell>{student?.name}</TableCell>
                       <TableCell>{student?.email}</TableCell>
-                      {/* <TableCell>{student?.joinedAt}</TableCell> */}
+                      <TableCell>
+                        {student?.joinedAt?.toString() || "today"}
+                      </TableCell>
                       <TableCell>
                         {student?.completedAssignments}/
                         {student?.totalAssignments} completed

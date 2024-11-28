@@ -39,11 +39,18 @@ export default function AssignmentDetailPage() {
           const result = fn(input);
           const passed = result === expected;
           allPassed = allPassed && passed;
-          results.push(`Test factorial(${input}): ${passed ? "✓" : "✗"} Expected ${expected}, got ${result}`);
+          results.push(
+            `Test factorial(${input}): ${passed ? "✓" : "✗"} Expected ${expected}, got ${result}`,
+          );
         } catch (error) {
-          const typedError = error as { message: string; key: { [key: string]: string } };
+          const typedError = error as {
+            message: string;
+            key: { [key: string]: string };
+          };
           allPassed = false;
-          results.push(`Test factorial(${input}): ✗ Error: ${typedError.message}`);
+          results.push(
+            `Test factorial(${input}): ✗ Error: ${typedError.message}`,
+          );
         }
       });
 
@@ -55,7 +62,10 @@ export default function AssignmentDetailPage() {
         toast.error("Some tests failed. Check the output.");
       }
     } catch (error) {
-      const typedError = error as { message: string; key: { [key: string]: string } };
+      const typedError = error as {
+        message: string;
+        key: { [key: string]: string };
+      };
       setOutput(`Error: ${typedError.message}`);
       toast.error("Error running code");
     }
@@ -63,6 +73,7 @@ export default function AssignmentDetailPage() {
 
   const handleSaveCode = () => {
     // Here you would typically save to a backend
+    console.log(code);
     toast.success("Code saved successfully!");
   };
 
@@ -94,7 +105,10 @@ export default function AssignmentDetailPage() {
                 <ScrollArea className="h-[calc(100vh-16rem)]">
                   <div className="space-y-4">
                     <h3 className="text-lg font-semibold">Task Description</h3>
-                    <p>Create a function that calculates the factorial of a number.</p>
+                    <p>
+                      Create a function that calculates the factorial of a
+                      number.
+                    </p>
                     <div className="space-y-2">
                       <h4 className="font-medium">Requirements:</h4>
                       <ul className="list-disc pl-6 space-y-1">
@@ -168,8 +182,8 @@ test('factorial of 5 is 120', () => {
               <ScrollArea className="flex-1">
                 <div className="space-y-4">
                   <div className="text-sm">
-                    <span className="font-medium">Teacher:</span> Let me know if you need
-                    help!
+                    <span className="font-medium">Teacher:</span> Let me know if
+                    you need help!
                   </div>
                 </div>
               </ScrollArea>

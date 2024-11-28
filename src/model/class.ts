@@ -1,18 +1,12 @@
 import { generateInviteCode } from "@/lib/geneateInviteCode";
-import { Model, model, models, ObjectId, Schema } from "mongoose";
+import { model, models, ObjectId, Schema } from "mongoose";
 import { IUser } from "./user";
-import { IAssignment } from "./assignment";
 
 export interface IStudent extends IUser {
   _id: ObjectId;
   joinedAt: Date;
   completedAssignments: number;
   totalAssignments: number;
-}
-export interface IAssignments extends IAssignment {
-  _id: ObjectId;
-  submissions: number;
-  totalStudents: number;
 }
 export interface IClass {
   _id?: ObjectId;
@@ -22,34 +16,30 @@ export interface IClass {
   inviteCode: string;
   admin: ObjectId;
   students?: IStudent[];
-  assignments?: IAssignments[];
 }
 
 // Schema definition
-const classSchema = new Schema<IClass>({
-  name: { type: String, required: true },
-  subject: { type: String, required: true },
-  description: { type: String, required: false },
-  inviteCode: { type: String, required: true, unique: true },
-  admin: { type: Schema.Types.ObjectId, ref: "User", required: true },
-  students: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: "User",
-      required: false,
-      unique: true,
-      default: [],
-    },
-  ],
-  assignments: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: "Assignment",
-      required: false,
-      default: [],
-    },
-  ],
-});
+const classSchema = new Schema<IClass>(
+  {
+    name: { type: String, required: true },
+    subject: { type: String, required: true },
+    description: { type: String, required: false },
+    inviteCode: { type: String, required: true, unique: true },
+    admin: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    students: [
+      {
+        user: {
+          type: Schema.Types.ObjectId,
+          ref: "User",
+          required: false,
+          unique: true,
+        },
+        joindeAt: { type: Date },
+      },
+    ],
+  },
+  { timestamps: true },
+);
 
 classSchema.pre("save", async function (next) {
   const classDoc = this;

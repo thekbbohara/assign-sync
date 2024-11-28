@@ -9,9 +9,8 @@ export const GET = async (
   try {
     await dbConnect();
     const classExist = await Class.findById(id).populate(["students"]);
-    console.log({ classExist });
     if (classExist) {
-      return Response.json({ class: classExist });
+      return Response.json(classExist);
     }
   } catch (err) {
     Response.json({ err: err });

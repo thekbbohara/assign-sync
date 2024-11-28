@@ -30,25 +30,37 @@ import { UserPlus, Mail, Copy, Check } from "lucide-react";
 import { useEffect, useState } from "react";
 import { IClass } from "@/model/class";
 import { useParams } from "next/navigation";
+import { IAssignment } from "@/model/assignment";
 export default function ClassDetailPage() {
   const [copied, setCopied] = useState(false);
   const [classDetail, setClassDetail] = useState<Partial<IClass>>({});
+  const [assignments, setAssignments] = useState<Partial<IAssignment>[]>([]);
+  console.log({ assignments });
   const params = useParams();
-
+  const classId: string = String(params.id);
   const copyInviteCode = () => {
     if (!classDetail.inviteCode) return;
     navigator.clipboard.writeText(classDetail.inviteCode);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
-
+  const fetchClassDetail = async (classId: string) => {
+    if (!classId) return;
+    const res = await fetch(`/api/class/${classId}`);
+    const data = await res.json();
+    setClassDetail(data);
+    return data;
+  };
+  const fetchAssigments = async (classId: string) => {
+    if (!classId) return;
+    const res = await fetch(`/api/assignment/${classId}`);
+    const data = await res.json();
+    setAssignments(data);
+    return data;
+  };
   useEffect(() => {
-    const fetchClassDetail = async () => {
-      const res = await fetch(`/api/class/${params.id}`);
-      const data = await res.json();
-      setClassDetail({ ...data.class });
-    };
-    fetchClassDetail();
+    fetchClassDetail(classId);
+    fetchAssigments(classId);
   }, []);
   return (
     <div className="p-6 space-y-6">
@@ -147,9 +159,9 @@ export default function ClassDetailPage() {
         </TabsContent>
         <TabsContent value="assignments">
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {classDetail.assignments &&
-              classDetail.assignments.length >= 1 &&
-              classDetail.assignments.map((assignment) => (
+            {assignments &&
+              assignments.length >= 1 &&
+              assignments.map((assignment) => (
                 <Card key={String(assignment._id)}>
                   <CardHeader>
                     <CardTitle>{assignment.title}</CardTitle>
@@ -160,8 +172,7 @@ export default function ClassDetailPage() {
                   <CardContent>
                     <div className="flex justify-between items-center">
                       <div className="text-sm text-muted-foreground">
-                        {assignment.submissions}/{assignment.totalStudents}{" "}
-                        submitted
+                        {`${assignment?.submissions?.length || 0}/${assignments.length} submitted`}
                       </div>
                       <Button variant="outline" size="sm">
                         View Details

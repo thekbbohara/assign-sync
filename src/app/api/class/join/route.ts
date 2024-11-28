@@ -3,7 +3,7 @@ import Class from "@/model/class";
 
 export const PUT = async (req: Request) => {
   const { code, userId } = await req.json();
-  console.log({ code, userId });
+  // console.log({ code, userId });
   if (!code) return Response.json({ err: "Invalid Code" });
   try {
     await dbConnect();

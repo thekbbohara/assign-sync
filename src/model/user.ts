@@ -11,8 +11,10 @@ const userSchema: Schema<IUser> = new Schema<IUser>({
   name: String,
   email: { type: String, required: true },
   avatar: String,
-})
+});
 
-const UserModel = (mongoose.models.User as mongoose.Model<IUser>) || mongoose.model<IUser>("User", userSchema)
+const UserModel =
+  (mongoose.models.User as mongoose.Model<IUser>) ||
+  mongoose.model<IUser>("User", userSchema);
 
 export default UserModel;

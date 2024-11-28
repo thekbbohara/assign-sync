@@ -19,7 +19,9 @@ export const GET = async (req: Request) => {
   const user = req.headers.get("user");
   // console.log({ user });
   if (!user || user == undefined) return Response.json([]);
-  const classes = await Class.find({ admin: user });
+  const classes = await Class.find({
+    $or: [{ admin: user }, { "students.user": user }],
+  });
   // console.log({ classes });
   return Response.json(classes);
 };

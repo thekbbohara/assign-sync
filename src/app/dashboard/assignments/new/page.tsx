@@ -22,8 +22,8 @@ import { useEffect, useRef, useState } from "react";
 import { IClass } from "@/model/class";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
-import { Stars } from "lucide-react";
 import { ObjectId } from "mongoose";
+import { GeneratePrompt } from "./generateDialog";
 
 interface TestCase {
   id: string;
@@ -176,6 +176,11 @@ export default function CreateAssignmentPage() {
     }
   };
 
+  // const handleAssignmentGeneration = (prompt) => {
+  //   // call the api
+  //   // fill the assignment feilds
+  // };
+
   useEffect(() => {
     const fetchClasses = async () => {
       const res = await fetch("/api/class", { headers: { user: userId! } });
@@ -197,10 +202,7 @@ export default function CreateAssignmentPage() {
           </p>
         </div>
         <div>
-          <Button className="flex gap-1">
-            <Stars />
-            <span>Generate</span>
-          </Button>
+          <GeneratePrompt />
         </div>
       </div>
 

@@ -261,7 +261,21 @@ export default function CreateAssignmentPage() {
               </div>
             </CardContent>
           </Card>
-
+          <Card>
+            <CardHeader>
+              <CardTitle>Instructions</CardTitle>
+              <CardDescription>
+                Provide detailed instructions for the assignment
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Textarea
+                ref={instructionsRef}
+                className="h-48"
+                placeholder="Write step-by-step instructions for completing the assignment..."
+              />
+            </CardContent>
+          </Card>
           <Card>
             <CardHeader>
               <CardTitle>Requirements</CardTitle>
@@ -293,7 +307,9 @@ export default function CreateAssignmentPage() {
               <Button onClick={handleAddRequirement}>Add Requirement</Button>
             </CardContent>
           </Card>
+        </div>
 
+        <div className="space-y-6">
           <Card>
             <CardHeader>
               <CardTitle>Examples</CardTitle>
@@ -323,25 +339,6 @@ export default function CreateAssignmentPage() {
               <Button onClick={handleAddExample}>Add Example</Button>
             </CardContent>
           </Card>
-        </div>
-
-        <div className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Instructions</CardTitle>
-              <CardDescription>
-                Provide detailed instructions for the assignment
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Textarea
-                ref={instructionsRef}
-                className="h-48"
-                placeholder="Write step-by-step instructions for completing the assignment..."
-              />
-            </CardContent>
-          </Card>
-
           <Card>
             <CardHeader>
               <CardTitle>Test Cases</CardTitle>

@@ -22,10 +22,13 @@ import { useEffect, useRef, useState } from "react";
 import { IClass } from "@/model/class";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
+import { Stars } from "lucide-react";
+import { ObjectId } from "mongoose";
 
 interface TestCase {
   id: string;
-  code: string;
+  input: string;
+  expected: string;
 }
 
 export default function CreateAssignmentPage() {
@@ -33,66 +36,132 @@ export default function CreateAssignmentPage() {
   const [classes, setClasses] = useState([]);
   const { data: session } = useSession();
   const userId = session?.user?.id;
-  const [selectedClass, setSelectedClass] = useState("");
+  const [selectedClass, setSelectedClass] = useState<ObjectId>();
   const titleRef = useRef<HTMLInputElement>(null);
   const descriptionRef = useRef<HTMLTextAreaElement>(null);
-  const starterCodeRef = useRef<HTMLTextAreaElement>(null);
-  const solutionRef = useRef<HTMLTextAreaElement>(null);
+  const [requirements, setRequirements] = useState<string[]>([""]);
+  const [examples, setExamples] = useState<string[]>([""]);
+  const instructionsRef = useRef<HTMLTextAreaElement>(null);
   const [testCases, setTestCases] = useState<TestCase[]>([
-    { id: "1", code: "" },
+    { id: "1", input: "", expected: "" },
   ]);
+  const codeTemplateRef = useRef<HTMLTextAreaElement>(null);
+  const outputRef = useRef<HTMLTextAreaElement>(null);
+
+  const handleAddRequirement = () => {
+    setRequirements([...requirements, ""]);
+  };
+
+  const handleRemoveRequirement = (index: number) => {
+    const newRequirements = [...requirements];
+    newRequirements.splice(index, 1);
+    setRequirements(newRequirements);
+  };
+
+  const handleRequirementChange = (index: number, value: string) => {
+    const newRequirements = [...requirements];
+    newRequirements[index] = value;
+    setRequirements(newRequirements);
+  };
+
+  const handleAddExample = () => {
+    setExamples([...examples, ""]);
+  };
+
+  const handleRemoveExample = (index: number) => {
+    const newExamples = [...examples];
+    newExamples.splice(index, 1);
+    setExamples(newExamples);
+  };
+
+  const handleExampleChange = (index: number, value: string) => {
+    const newExamples = [...examples];
+    newExamples[index] = value;
+    setExamples(newExamples);
+  };
 
   const handleAddTestCase = () => {
-    setTestCases([...testCases, { id: Date.now().toString(), code: "" }]);
+    setTestCases([
+      ...testCases,
+      { id: Date.now().toString(), input: "", expected: "" },
+    ]);
   };
 
   const handleRemoveTestCase = (id: string) => {
     setTestCases(testCases.filter((testCase) => testCase.id !== id));
   };
 
-  const handleTestCaseChange = (id: string, code: string) => {
+  const handleTestCaseChange = (
+    id: string,
+    field: "input" | "expected",
+    value: string,
+  ) => {
     setTestCases(
       testCases.map((testCase) =>
-        testCase.id === id ? { ...testCase, code } : testCase,
+        testCase.id === id ? { ...testCase, [field]: value } : testCase,
       ),
     );
   };
 
   const handlePublish = async () => {
+    // Check for required references
     if (
       !titleRef.current ||
       !descriptionRef.current ||
-      !starterCodeRef.current ||
-      !solutionRef.current
-    )
+      !instructionsRef.current ||
+      !codeTemplateRef.current ||
+      !outputRef.current
+    ) {
       return toast.error("Something went wrong. Try again.");
-
-    const title = titleRef.current.value;
-    const description = descriptionRef.current.value;
-    const starterCode = starterCodeRef.current.value;
-    const solution = solutionRef.current.value;
-
-    if (!title || !description || !dueDate || !selectedClass) {
-      toast.error("Please fill out all required fields.");
-      return;
     }
 
+    // Extract values from refs
+    const title = titleRef.current.value;
+    const description = descriptionRef.current.value;
+    const instructions = instructionsRef.current.value;
+    const codeTemplate = codeTemplateRef.current.value;
+    const output = outputRef.current.value;
+    console.log({
+      title,
+      description,
+      instructions,
+      codeTemplate,
+      output,
+      selectedClass,
+    });
+    // Check if all required fields are filled
+    if (!title || !description || !codeTemplate || !selectedClass) {
+      return toast.error("Please fill out all required fields.");
+    }
+
+    // Check if the user is authenticated and has a valid user ID
+    if (!userId) {
+      return toast.error("User not authenticated.");
+    }
+
+    // Prepare data for the request
+    const payload = {
+      title,
+      description,
+      requirements,
+      examples,
+      instructions,
+      testCases,
+      codeTemplate,
+      output,
+      dueDate,
+      class: selectedClass,
+      user: userId, // Use userId directly instead of headers
+    };
+
     try {
+      // Send POST request to create the assignment
       const res = await fetch("/api/assignment", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          user: userId!,
         },
-        body: JSON.stringify({
-          title,
-          description,
-          starterCode,
-          solution,
-          dueDate,
-          class: selectedClass,
-          testCases: testCases.map((tc) => tc.code),
-        }),
+        body: JSON.stringify(payload),
       });
 
       if (res.ok) {
@@ -112,7 +181,6 @@ export default function CreateAssignmentPage() {
       const res = await fetch("/api/class", { headers: { user: userId! } });
       const data = await res.json();
       setClasses(data);
-      console.log(data, selectedClass);
     };
     if (userId) {
       fetchClasses();
@@ -128,6 +196,12 @@ export default function CreateAssignmentPage() {
             Create a new coding assignment for your class
           </p>
         </div>
+        <div>
+          <Button className="flex gap-1">
+            <Stars />
+            <span>Generate</span>
+          </Button>
+        </div>
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
@@ -142,7 +216,11 @@ export default function CreateAssignmentPage() {
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <label className="text-sm font-medium">Title</label>
-                <Input ref={titleRef} placeholder="JavaScript Basics" />
+                <Input
+                  ref={titleRef}
+                  placeholder="JavaScript Basics"
+                  required
+                />
               </div>
               <div className="space-y-2">
                 <label className="text-sm font-medium">Description</label>
@@ -150,11 +228,17 @@ export default function CreateAssignmentPage() {
                   ref={descriptionRef}
                   placeholder="Write a detailed description of the assignment..."
                   className="h-32"
+                  required
                 />
               </div>
               <div className="space-y-2">
                 <label className="text-sm font-medium">Class</label>
-                <Select>
+                <Select
+                  required
+                  onValueChange={(value) => {
+                    setSelectedClass(value as unknown as ObjectId);
+                  }}
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="Select a class" />
                   </SelectTrigger>
@@ -164,9 +248,6 @@ export default function CreateAssignmentPage() {
                         <SelectItem
                           key={String(classItem._id)}
                           value={String(classItem._id)}
-                          onClick={() => {
-                            setSelectedClass(String(classItem._id));
-                          }}
                         >
                           {classItem.name}
                         </SelectItem>
@@ -178,6 +259,86 @@ export default function CreateAssignmentPage() {
                 <label className="text-sm font-medium">Due Date</label>
                 <DatePicker date={dueDate} setDate={setDueDate} />
               </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Requirements</CardTitle>
+              <CardDescription>
+                List the requirements for this assignment
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {requirements.map((req, index) => (
+                <div key={index} className="flex items-center space-x-2">
+                  <Input
+                    value={req}
+                    onChange={(e) =>
+                      handleRequirementChange(index, e.target.value)
+                    }
+                    placeholder={`Requirement ${index + 1}`}
+                  />
+                  {requirements.length > 1 && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleRemoveRequirement(index)}
+                    >
+                      Remove
+                    </Button>
+                  )}
+                </div>
+              ))}
+              <Button onClick={handleAddRequirement}>Add Requirement</Button>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Examples</CardTitle>
+              <CardDescription>
+                Provide examples to illustrate the assignment
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {examples.map((example, index) => (
+                <div key={index} className="flex items-center space-x-2">
+                  <Input
+                    value={example}
+                    onChange={(e) => handleExampleChange(index, e.target.value)}
+                    placeholder={`Example ${index + 1}`}
+                  />
+                  {examples.length > 1 && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleRemoveExample(index)}
+                    >
+                      Remove
+                    </Button>
+                  )}
+                </div>
+              ))}
+              <Button onClick={handleAddExample}>Add Example</Button>
+            </CardContent>
+          </Card>
+        </div>
+
+        <div className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Instructions</CardTitle>
+              <CardDescription>
+                Provide detailed instructions for the assignment
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Textarea
+                ref={instructionsRef}
+                className="h-48"
+                placeholder="Write step-by-step instructions for completing the assignment..."
+              />
             </CardContent>
           </Card>
 
@@ -205,36 +366,42 @@ export default function CreateAssignmentPage() {
                       </Button>
                     )}
                   </div>
-                  <Textarea
-                    className="font-mono text-sm h-24"
-                    value={testCase.code}
+                  <Input
+                    placeholder="Input"
+                    value={testCase.input}
                     onChange={(e) =>
-                      handleTestCaseChange(testCase.id, e.target.value)
+                      handleTestCaseChange(testCase.id, "input", e.target.value)
                     }
-                    placeholder={`test('factorial of 0 is 1', () => {
-  expect(factorial(0)).toBe(1);
-});`}
+                  />
+                  <Input
+                    placeholder="Expected Output"
+                    value={testCase.expected}
+                    onChange={(e) =>
+                      handleTestCaseChange(
+                        testCase.id,
+                        "expected",
+                        e.target.value,
+                      )
+                    }
                   />
                 </div>
               ))}
               <Button onClick={handleAddTestCase}>Add Test Case</Button>
             </CardContent>
           </Card>
-        </div>
 
-        <div className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Starter Code</CardTitle>
+              <CardTitle>Code Template</CardTitle>
               <CardDescription>
                 Provide initial code for students
               </CardDescription>
             </CardHeader>
             <CardContent>
               <Textarea
-                ref={starterCodeRef}
+                ref={codeTemplateRef}
                 className="font-mono text-sm h-48"
-                placeholder={`function factorial(n) {
+                placeholder={`function solution(input) {
   // Your code here
 }`}
               />
@@ -243,19 +410,16 @@ export default function CreateAssignmentPage() {
 
           <Card>
             <CardHeader>
-              <CardTitle>Solution</CardTitle>
+              <CardTitle>Expected Output</CardTitle>
               <CardDescription>
-                Reference solution (only visible to you)
+                Describe the expected output format
               </CardDescription>
             </CardHeader>
             <CardContent>
               <Textarea
-                ref={solutionRef}
-                className="font-mono text-sm h-48"
-                placeholder={`function factorial(n) {
-  if (n === 0 || n === 1) return 1;
-  return n * factorial(n - 1);
-}`}
+                ref={outputRef}
+                className="h-24"
+                placeholder="Describe the expected output format..."
               />
             </CardContent>
           </Card>

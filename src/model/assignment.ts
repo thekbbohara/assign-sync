@@ -1,4 +1,4 @@
-import mongoose, { Schema, Document, Model, model } from "mongoose";
+import mongoose, { Schema, Document, Model, model, ObjectId } from "mongoose";
 
 // Define the TestCase schema
 const testCaseSchema = new Schema(
@@ -9,8 +9,23 @@ const testCaseSchema = new Schema(
   { _id: false }, // Prevents Mongoose from creating an `_id` for each test case
 );
 
+// Define the IAssignment interface (optional, if you want to add typing)
+export interface IAssignment extends Document {
+  title: string;
+  description: string;
+  requirements: string[];
+  examples: string[];
+  instructions: string;
+  codeTemplate: string;
+  output: string;
+  dueDate: Date;
+  selectedClass: Schema.Types.ObjectId;
+  userId: Schema.Types.ObjectId;
+  testCases: { input: string; expected: string }[];
+  submissions: { code: string; user: ObjectId }[];
+}
 // Define the Assignment Schema
-const assignmentSchema = new Schema(
+const assignmentSchema = new Schema<IAssignment>(
   {
     title: { type: String, required: true },
     description: { type: String, required: true },
@@ -27,24 +42,12 @@ const assignmentSchema = new Schema(
     },
     userId: { type: Schema.Types.ObjectId, ref: "User", required: true }, // Reference to the User model
     testCases: { type: [testCaseSchema], required: true }, // Array of test cases
+    submissions: [
+      { code: String, user: { type: Schema.Types.ObjectId, ref: "User" } },
+    ],
   },
   { timestamps: true }, // Automatically add `createdAt` and `updatedAt` fields
 );
-
-// Define the IAssignment interface (optional, if you want to add typing)
-interface IAssignment extends Document {
-  title: string;
-  description: string;
-  requirements: string[];
-  examples: string[];
-  instructions: string;
-  codeTemplate: string;
-  output: string;
-  dueDate: Date;
-  selectedClass: Schema.Types.ObjectId;
-  userId: Schema.Types.ObjectId;
-  testCases: { input: string; expected: string }[];
-}
 
 // Create and export the Assignment model
 const Assignment: Model<IAssignment> =

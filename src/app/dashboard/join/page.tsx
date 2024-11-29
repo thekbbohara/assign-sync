@@ -100,9 +100,10 @@ export default function JoinClassPage() {
 
       const data = await res.json();
       if (!data.err) {
+        toast.success(data.msg);
         router.push(`/dashboard/classes/${data.class_id}`);
       } else {
-        toast.error("Failed to join class!");
+        toast.error(data.msg || "Something went wrong.");
       }
     } catch {
       toast.error("An error occurred!");

@@ -6,41 +6,62 @@ export const PUT = async (req: Request) => {
   const { code, userId } = await req.json();
   const uid = new mongoose.Types.ObjectId(userId);
   console.log({ code, uid });
-  if (!code)
+
+  if (!code) {
     return new Response(JSON.stringify({ err: "Invalid Code" }), {
       status: 400,
     });
+  }
 
   try {
     await dbConnect();
-    const updatedClass = await Class.findOneAndUpdate(
-      { inviteCode: code, admin: { $ne: uid } },
-      { $addToSet: { students: { user: uid, joinedAt: Date.now() } } }, // Avoid duplication
-      { new: true },
-    );
 
-    console.log({ updatedClass });
-    if (!updatedClass) {
+    // Check if the class exists with the given code
+    const targetClass = await Class.findOne({ inviteCode: code });
+    if (!targetClass) {
+      return new Response(JSON.stringify({ err: true, msg: "Invalid code." }), {
+        status: 400,
+      });
+    }
+
+    // Check if the user is the admin of the class
+    if (targetClass.admin.equals(uid)) {
       return new Response(
-        JSON.stringify({
-          err: true,
-          msg: "Invalid code or admin can't join class.",
-        }),
+        JSON.stringify({ err: true, msg: "Admin cannot join the class." }),
         { status: 400 },
       );
     }
+    type TStudent = {
+      user: mongoose.Types.ObjectId; // Explicitly define the type
+      joinedAt?: Date;
+    };
+    // Check if the user is already in the students array
+    const isAlreadyStudent = targetClass.students.some((student: TStudent) =>
+      student.user.equals(uid),
+    );
+    if (isAlreadyStudent) {
+      return new Response(
+        JSON.stringify({ err: true, msg: "User already joined the class." }),
+        { status: 400 },
+      );
+    }
+
+    // Add the user to the class if all checks pass
+    targetClass.students.push({ user: uid, joinedAt: Date.now() });
+    await targetClass.save();
+
     return new Response(
       JSON.stringify({
         err: null,
         msg: "Class joined successfully.",
-        class_id: updatedClass._id,
+        class_id: targetClass._id,
       }),
       { status: 200 },
     );
   } catch (e) {
     console.log(e);
     return new Response(
-      JSON.stringify({ err: true, msg: "Something went wrong" }),
+      JSON.stringify({ err: true, msg: "Something went wrong." }),
       { status: 500 },
     );
   }

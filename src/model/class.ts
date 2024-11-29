@@ -34,7 +34,7 @@ const classSchema = new Schema<IClass>(
           required: false,
           unique: true,
         },
-        joindeAt: { type: Date },
+        joinedAt: { type: Date },
       },
     ],
   },

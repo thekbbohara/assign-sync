@@ -24,6 +24,7 @@ import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 import { ObjectId } from "mongoose";
 import { GeneratePrompt } from "./generateDialog";
+import { useRouter } from "next/navigation";
 
 interface TestCase {
   id: string;
@@ -32,10 +33,11 @@ interface TestCase {
 }
 
 export default function CreateAssignmentPage() {
-  const [dueDate, setDueDate] = useState<Date>();
-  const [classes, setClasses] = useState([]);
   const { data: session } = useSession();
+  const router = useRouter();
+  const [dueDate, setDueDate] = useState<Date>();
   const userId = session?.user?.id;
+  const [classes, setClasses] = useState([]);
   const [selectedClass, setSelectedClass] = useState<ObjectId>();
   const titleRef = useRef<HTMLInputElement>(null);
   const descriptionRef = useRef<HTMLTextAreaElement>(null);
@@ -46,7 +48,7 @@ export default function CreateAssignmentPage() {
     { id: "1", input: "", expected: "" },
   ]);
   const codeTemplateRef = useRef<HTMLTextAreaElement>(null);
-  const outputRef = useRef<HTMLTextAreaElement>(null);
+  const solutionRef = useRef<HTMLTextAreaElement>(null);
 
   const handleAddRequirement = () => {
     setRequirements([...requirements, ""]);
@@ -110,7 +112,7 @@ export default function CreateAssignmentPage() {
       !descriptionRef.current ||
       !instructionsRef.current ||
       !codeTemplateRef.current ||
-      !outputRef.current
+      !solutionRef.current
     ) {
       return toast.error("Something went wrong. Try again.");
     }
@@ -120,13 +122,13 @@ export default function CreateAssignmentPage() {
     const description = descriptionRef.current.value;
     const instructions = instructionsRef.current.value;
     const codeTemplate = codeTemplateRef.current.value;
-    const output = outputRef.current.value;
+    const solution = solutionRef.current.value;
     console.log({
       title,
       description,
       instructions,
       codeTemplate,
-      output,
+      solution,
       selectedClass,
     });
     // Check if all required fields are filled
@@ -148,10 +150,10 @@ export default function CreateAssignmentPage() {
       instructions,
       testCases,
       codeTemplate,
-      output,
+      solution,
       dueDate,
       class: selectedClass,
-      user: userId, // Use userId directly instead of headers
+      user: userId as unknown as ObjectId, // Use userId directly instead of headers
     };
 
     try {
@@ -163,23 +165,68 @@ export default function CreateAssignmentPage() {
         },
         body: JSON.stringify(payload),
       });
+      const { err, msg } = await res.json();
 
-      if (res.ok) {
-        toast.success("Assignment published successfully!");
+      if (!err) {
+        toast.success(msg);
+        router.push(`/dashboard/classes/${selectedClass}`);
       } else {
-        const error = await res.json();
-        toast.error(`Error: ${error.message}`);
+        return toast.error(`${msg}`);
       }
-    } catch (err) {
-      console.error("Failed to publish assignment:", err);
+    } catch (error) {
+      console.error("Failed to publish assignment:", error);
       toast.error("Failed to publish assignment. Please try again.");
     }
   };
 
-  // const handleAssignmentGeneration = (prompt) => {
-  //   // call the api
-  //   // fill the assignment feilds
-  // };
+  const handleAssignmentGeneration = async (prompt: string) => {
+    console.log(prompt);
+    // call the api
+    const res = await fetch("/api/assignment/generate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ prompt }),
+    });
+    const { err, msg, assignment } = await res.json();
+    if (err) return toast.error(msg);
+    const {
+      title,
+      description,
+      instructions,
+      requirments: reqs,
+      examples: egs,
+      testCases: tests,
+      codeTemplate,
+      solution,
+    } = JSON.parse(assignment);
+    console.log(JSON.parse(assignment));
+    // fill the assignment feilds
+
+    if (titleRef.current && title) {
+      titleRef.current.value = title;
+    }
+    if (descriptionRef.current && description) {
+      descriptionRef.current.value = description;
+    }
+    if (instructionsRef.current && instructions) {
+      instructionsRef.current.value = instructions;
+    }
+    if (codeTemplateRef.current && codeTemplate) {
+      codeTemplateRef.current.value = codeTemplate;
+    }
+    if (solutionRef.current && solution) {
+      solutionRef.current.value = solution;
+    }
+    if (Array.isArray(reqs) && reqs.length >= 1) {
+      setRequirements(reqs);
+    }
+    if (Array.isArray(egs) && egs.length >= 1) {
+      setExamples(egs);
+    }
+    if (Array.isArray(tests) && tests.length >= 1) {
+      setTestCases(tests);
+    }
+  };
 
   useEffect(() => {
     const fetchClasses = async () => {
@@ -202,7 +249,7 @@ export default function CreateAssignmentPage() {
           </p>
         </div>
         <div>
-          <GeneratePrompt />
+          <GeneratePrompt fn={handleAssignmentGeneration} />
         </div>
       </div>
 
@@ -373,7 +420,7 @@ export default function CreateAssignmentPage() {
                     }
                   />
                   <Input
-                    placeholder="Expected Output"
+                    placeholder="Expected solution"
                     value={testCase.expected}
                     onChange={(e) =>
                       handleTestCaseChange(
@@ -409,16 +456,16 @@ export default function CreateAssignmentPage() {
 
           <Card>
             <CardHeader>
-              <CardTitle>Expected Output</CardTitle>
+              <CardTitle>Solution</CardTitle>
               <CardDescription>
-                Describe the expected output format
+                Solution is only visible to you.
               </CardDescription>
             </CardHeader>
             <CardContent>
               <Textarea
-                ref={outputRef}
+                ref={solutionRef}
                 className="h-24"
-                placeholder="Describe the expected output format..."
+                placeholder="solution reference"
               />
             </CardContent>
           </Card>

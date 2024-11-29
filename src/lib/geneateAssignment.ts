@@ -36,7 +36,7 @@ export const generateAssignment = async (API_KEY: string, prompt: string) => {
             },
           },
           codeTemplate: { type: SchemaType.STRING },
-          output: { type: SchemaType.STRING },
+          solution: { type: SchemaType.STRING },
         },
         required: [
           "title",
@@ -46,7 +46,7 @@ export const generateAssignment = async (API_KEY: string, prompt: string) => {
           "instructions",
           "testCases",
           "codeTemplate",
-          "output",
+          "solution",
         ],
         example: {
           title: "Calculate Factorial",
@@ -66,8 +66,8 @@ export const generateAssignment = async (API_KEY: string, prompt: string) => {
             { input: "1", expected: "1" },
           ],
           codeTemplate: "function factorial(n) { /* Your code */ }",
-          output:
-            "The function should return the factorial of the input number.",
+          solution:
+            "The function should correctly compute the factorial of the input number.",
         },
       },
     };
@@ -77,12 +77,11 @@ export const generateAssignment = async (API_KEY: string, prompt: string) => {
       generationConfig,
     });
 
-    // const result = await model.generateContent(prompt);
-    const prePrompt = "keep the title short";
+    // const prePrompt = "Keep the title short";
+    const prePrompt =
+      "Provide a detailed and structured coding assignment with the following: a concise title, clear description, specific requirements, examples, step-by-step instructions, test cases, a starter code template, and a complete solution.";
     const result = await model.generateContent(`${prePrompt}. ${prompt}`);
-    // console.log(prompt)
-    // console.log("Generated Assignment:", result.response.text());
-    // console.log(result.response.text());
+
     return result.response.text();
   } catch (error) {
     console.error("Error generating assignment:", error);

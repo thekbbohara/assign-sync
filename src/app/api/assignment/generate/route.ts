@@ -12,7 +12,7 @@ export const POST = async (req: Request) => {
   console.log(generatedAssignment);
 
   return Response.json({
-    err: true,
+    err: false,
     msg: "Assignment Generation Successfull",
     assignment: generatedAssignment,
   });

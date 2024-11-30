@@ -8,7 +8,8 @@ export const GET = async (
   const { id } = await params;
   try {
     await dbConnect();
-    const classExist = await Class.findById(id).populate(["students"]);
+    const classExist = await Class.findById(id).populate(["students.user"]);
+
     if (classExist) {
       return Response.json(classExist);
     }

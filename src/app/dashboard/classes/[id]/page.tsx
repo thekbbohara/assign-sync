@@ -49,6 +49,7 @@ export default function ClassDetailPage() {
     if (!classId) return;
     const res = await fetch(`/api/class/${classId}`);
     const data = await res.json();
+    console.log("classde", data);
     setClassDetail(data);
     return data;
   };
@@ -60,9 +61,11 @@ export default function ClassDetailPage() {
     return data;
   };
   useEffect(() => {
-    fetchClassDetail(classId);
-    fetchAssigments(classId);
-  }, []);
+    (async function () {
+      await fetchClassDetail(classId);
+      await fetchAssigments(classId);
+    })();
+  }, [classId]);
   return (
     <div className="p-6 space-y-6">
       <div className="flex justify-between items-center">
@@ -142,15 +145,15 @@ export default function ClassDetailPage() {
                 {classDetail.students &&
                   classDetail.students.length >= 1 &&
                   classDetail.students.map((student) => (
-                    <TableRow key={String(student?._id)}>
-                      <TableCell>{student?.name}</TableCell>
-                      <TableCell>{student?.email}</TableCell>
+                    <TableRow key={String(student?.user?._id)}>
+                      <TableCell>{student?.user?.name}</TableCell>
+                      <TableCell>{student?.user?.email}</TableCell>
                       <TableCell>
                         {student?.joinedAt?.toString() || "today"}
                       </TableCell>
                       <TableCell>
-                        {student?.completedAssignments}/
-                        {student?.totalAssignments} completed
+                        {student?.completedAssignments ?? "0"}/
+                        {student?.totalAssignments ?? "0"} completed
                       </TableCell>
                     </TableRow>
                   ))}

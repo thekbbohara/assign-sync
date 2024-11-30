@@ -5,6 +5,7 @@ import { IUser } from "./user";
 export interface IStudent extends IUser {
   _id: ObjectId;
   joinedAt: Date;
+  user: IUser;
   completedAssignments: number;
   totalAssignments: number;
 }

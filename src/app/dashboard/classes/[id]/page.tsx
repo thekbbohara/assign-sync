@@ -1,5 +1,4 @@
 "use client";
-
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -125,7 +124,7 @@ export default function ClassDetailPage() {
         </div>
       </div>
 
-      <Tabs defaultValue="students">
+      <Tabs defaultValue="assignments">
         <TabsList>
           <TabsTrigger value="students">Students</TabsTrigger>
           <TabsTrigger value="assignments">Assignments</TabsTrigger>
@@ -153,7 +152,7 @@ export default function ClassDetailPage() {
                       </TableCell>
                       <TableCell>
                         {student?.completedAssignments ?? "0"}/
-                        {student?.totalAssignments ?? "0"} completed
+                        {student?.totalAssignments ?? ""} completed
                       </TableCell>
                     </TableRow>
                   ))}

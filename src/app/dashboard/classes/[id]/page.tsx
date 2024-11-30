@@ -31,6 +31,7 @@ import { useEffect, useState } from "react";
 import { IClass } from "@/model/class";
 import { useParams } from "next/navigation";
 import { IAssignment } from "@/model/assignment";
+import Link from "next/link";
 export default function ClassDetailPage() {
   const [copied, setCopied] = useState(false);
   const [classDetail, setClassDetail] = useState<Partial<IClass>>({});
@@ -174,8 +175,10 @@ export default function ClassDetailPage() {
                       <div className="text-sm text-muted-foreground">
                         {`${assignment?.submissions?.length || 0}/${assignments.length} submitted`}
                       </div>
-                      <Button variant="outline" size="sm">
-                        View Details
+                      <Button>
+                        <Link href={`/dashboard/assignments/${assignment._id}`}>
+                          View Details
+                        </Link>
                       </Button>
                     </div>
                   </CardContent>

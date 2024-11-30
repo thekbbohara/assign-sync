@@ -447,9 +447,10 @@ export default function CreateAssignmentPage() {
               <Textarea
                 ref={codeTemplateRef}
                 className="font-mono text-sm h-48"
-                placeholder={`function solution(input) {
-  // Your code here
-}`}
+                placeholder={`function test(){
+  //your code here
+};
+return test`}
               />
             </CardContent>
           </Card>

@@ -397,7 +397,7 @@ export default function CreateAssignmentPage() {
             </CardHeader>
             <CardContent className="space-y-4">
               {testCases.map((testCase, index) => (
-                <div key={testCase.id} className="space-y-2">
+                <div key={testCase.id + index} className="space-y-2">
                   <div className="flex justify-between items-center">
                     <label className="text-sm font-medium">
                       Test Case {index + 1}

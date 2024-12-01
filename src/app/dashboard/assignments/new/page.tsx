@@ -193,7 +193,7 @@ export default function CreateAssignmentPage() {
       title,
       description,
       instructions,
-      requirments: reqs,
+      requirements: reqs,
       examples: egs,
       testCases: tests,
       codeTemplate,

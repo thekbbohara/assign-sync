@@ -148,7 +148,11 @@ export default function ClassDetailPage() {
                       <TableCell>{student?.user?.name}</TableCell>
                       <TableCell>{student?.user?.email}</TableCell>
                       <TableCell>
-                        {student?.joinedAt?.toString() || "today"}
+                        {student?.joinedAt
+                          ? new Date(student.joinedAt).toLocaleDateString(
+                              "en-CA",
+                            )
+                          : "today"}
                       </TableCell>
                       <TableCell>
                         {student?.completedAssignments ?? "0"}/

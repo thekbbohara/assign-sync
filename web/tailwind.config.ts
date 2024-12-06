@@ -89,7 +89,7 @@ const config: Config = {
   },
   plugins: [
     tailwindcssAnimate,
-    function ({ matchUtilities, theme }) {
+    function ({ matchUtilities, theme }: { matchUtilities: any; theme: any }) {
       matchUtilities(
         {
           "bg-grid": (value: string) => ({
@@ -109,7 +109,7 @@ const config: Config = {
           }),
         },
         {
-          values: flattenColorPalette(theme("backgroundColor")),
+          values: theme("backgroundColor"), // Use theme instead of flattenColorPalette
           type: "color",
         },
       );

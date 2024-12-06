@@ -63,3 +63,42 @@ export const GET = async (req: Request) => {
     return Response.json({ err: true, msg: "Something went wrong." });
   }
 };
+
+export const PUT = async (req: Request) => {
+  const { code, userId, assignmentId } = await req.json();
+  try {
+    await dbConnect();
+
+    // Step 1: Update the submission for the existing user
+    const updatedAssignment = await Assignment.findOneAndUpdate(
+      { _id: assignmentId, "submissions.user": userId }, // Match the assignment and specific user
+      { $set: { "submissions.$.code": code } }, // Update the code for the matched user
+      { new: true }, // Return the updated document
+    );
+
+    if (!updatedAssignment) {
+      // Step 2: If no submission exists for the user, add a new one
+      const newSubmission = await Assignment.findByIdAndUpdate(
+        assignmentId,
+        {
+          $push: { submissions: { user: userId, code } },
+        },
+        { new: true }, // Return the updated document
+      );
+      console.log("New submission added:", newSubmission);
+      return new Response(JSON.stringify({ err: null }), {
+        status: 200,
+      });
+    }
+
+    // console.log("Submission updated:", updatedAssignment);
+    return new Response(JSON.stringify({ err: null }), {
+      status: 200,
+    });
+  } catch (err) {
+    console.error("Error updating assignment:", err);
+    return new Response(JSON.stringify({ err: true }), {
+      status: 500,
+    });
+  }
+};

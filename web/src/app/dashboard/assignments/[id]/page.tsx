@@ -76,9 +76,19 @@ export default function AssignmentDetailPage() {
     }
   };
 
-  const handleSaveCode = () => {
+  const handleSaveCode = async () => {
     // Here you would typically save to a backend
-    console.log(code);
+    if (!userId || !code) return;
+    const res = await fetch("/api/assignment", {
+      method: "PUT",
+      headers: {
+        "Content-type": "application/json",
+      },
+      body: JSON.stringify({ code, userId, assignmentId: id }),
+    });
+    const data = await res.json();
+    console.log("saved", data);
+    if (!data.err) return toast.success("Something went wrong!");
     toast.success("Code saved successfully!");
   };
   useEffect(() => {

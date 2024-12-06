@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogFooter,
   DialogTitle,
@@ -8,19 +9,25 @@ import {
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { Stars } from "lucide-react";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { toast } from "sonner";
 
-export const GeneratePrompt = ({ fn }: { fn: (prompt: string) => void }) => {
+export const GeneratePrompt = ({
+  fn,
+}: {
+  fn: (prompt: string) => Promise<boolean>;
+}) => {
   const promptRef = useRef<HTMLTextAreaElement>(null);
+  const [open, setOpen] = useState<boolean>(false);
   return (
     <>
-      <Dialog>
+      <Dialog open={open}>
         <DialogTrigger>
           <Button
             className="flex gap-1"
             onClick={() => {
               console.log("generate assignment");
+              setOpen(true);
             }}
           >
             <Stars />
@@ -39,13 +46,17 @@ export const GeneratePrompt = ({ fn }: { fn: (prompt: string) => void }) => {
           <DialogFooter>
             <Button
               className="flex gap-1"
-              onClick={(e) => {
+              onClick={async (e) => {
                 const textarea = promptRef.current;
                 if (!textarea) return toast.error("Something went wrong.");
                 const prompt = textarea.value;
                 textarea.readOnly = true;
                 e.currentTarget.disabled = true;
-                fn(prompt);
+                const res = await fn(prompt);
+                console.log(res);
+                if (res) {
+                  setOpen(false);
+                }
               }}
             >
               <Stars />

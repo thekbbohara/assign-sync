@@ -188,7 +188,10 @@ export default function CreateAssignmentPage() {
       body: JSON.stringify({ prompt }),
     });
     const { err, msg, assignment } = await res.json();
-    if (err) return toast.error(msg);
+    if (err) {
+      toast.error(msg);
+      return false;
+    }
     const {
       title,
       description,
@@ -226,6 +229,7 @@ export default function CreateAssignmentPage() {
     if (Array.isArray(tests) && tests.length >= 1) {
       setTestCases(tests);
     }
+    return true;
   };
 
   useEffect(() => {

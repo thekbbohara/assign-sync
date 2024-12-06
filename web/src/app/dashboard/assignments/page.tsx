@@ -7,6 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 import { IAssignment } from "@/model/assignment";
 import { Eye, Timer, Users } from "lucide-react";
 import { useSession } from "next-auth/react";
@@ -32,10 +33,10 @@ export default function AssignmentsPage() {
     fetchAssignments();
   }, [userId]);
   return (
-    <div className="p-6">
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {assignments.length >= 1 ? (
-          assignments.map((assignment) => (
+    <div className={cn(assignments.length >= 1 ? "p-6" : "p-0")}>
+      {assignments.length >= 1 ? (
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {assignments.map((assignment) => (
             <Card key={String(assignment._id)}>
               <CardHeader>
                 <CardTitle>{assignment.title}</CardTitle>
@@ -64,11 +65,17 @@ export default function AssignmentsPage() {
                 </div>
               </CardContent>
             </Card>
-          ))
-        ) : (
-          <div>No Saved Assignment.</div>
-        )}
-      </div>
+          ))}
+        </div>
+      ) : (
+        <div className="h-[calc(100svh-70px)] w-full dark:bg-transparent bg-white  dark:bg-grid-white/[0.2] bg-grid-black/[0.2] relative flex items-center justify-center">
+          {/* Radial gradient for the container to give a faded look */}
+          <div className="absolute pointer-events-none inset-0 flex items-center justify-center dark:bg-transparent bg-white [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black)]"></div>
+          <p className="text-3xl sm:text-5xl font-bold relative z-20 bg-clip-text text-transparent bg-gradient-to-b from-neutral-200 to-neutral-500 py-8">
+            No Saved Assignment
+          </p>
+        </div>
+      )}
     </div>
   );
 }

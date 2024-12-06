@@ -31,6 +31,7 @@ export default function ClassesPage() {
       });
       const data: IClass[] = await res.json();
       setClasses(data);
+      setLoading(false);
     };
     if (userId && refresh) {
       getClasses();

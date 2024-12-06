@@ -92,7 +92,7 @@ export default function ClassesPage() {
           ))}
         </div>
       ) : (
-        <GridBackground>
+        <GridBackground className="h-[calc(100svh-70px)]">
           {loading ? <Loader /> : <span>No Saved Assignment</span>}
         </GridBackground>
       )}

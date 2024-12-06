@@ -15,18 +15,21 @@ export const GET = async (req: Request) => {
   // Connect to the database
   await dbConnect();
   // Fetch the classes where the admin is the current user
-  const classes: IClass[] = await Class.find({ admin: userId });
+  const classes: IClass[] = await Class.find({ admin: userId }).populate(
+    "students.user",
+  );
   const allStudents = classes.flatMap((c) => c.students);
   const uniqueStudents = Array.from(
     new Set(
       allStudents.map((student) => {
         if (student) {
-          return String(student.user);
+          return student.user;
         }
       }),
     ),
   );
-  // console.log("Classes found:", classes);
+  // const uniqueStudentsDetails = uniqueStudents.map(async(student)=> allStudents)
+  console.log({ uniqueStudents });
   if (filter === "total") {
     return new Response(
       JSON.stringify({ err: null, total: uniqueStudents.length }),
@@ -35,7 +38,7 @@ export const GET = async (req: Request) => {
   }
   // Default response if filter is not "total"
   return new Response(
-    JSON.stringify({ err: "Invalid filter value!" }),
+    JSON.stringify({ data: uniqueStudents, err: null }),
     { status: 400 }, // Bad Request
   );
 };

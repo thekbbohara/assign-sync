@@ -1,9 +1,8 @@
-import React from 'react'
+import React from "react";
+import ProfilePage from "../profile/page";
 
 const Settings = () => {
-  return (
-    <div>Settings</div>
-  )
-}
+  return <ProfilePage />;
+};
 
-export default Settings
+export default Settings;

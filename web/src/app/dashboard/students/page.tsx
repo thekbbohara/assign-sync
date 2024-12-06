@@ -1,4 +1,5 @@
 "use client";
+import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -8,19 +9,20 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { IStudent } from "@/model/class";
+import { PlusIcon } from "lucide-react";
 import { useSession } from "next-auth/react";
 import React, { useEffect, useState } from "react";
 
 const Students = () => {
   const { data: session } = useSession(); // Use useSession hook to get session data
   const [students, setStudents] = useState<Partial<IStudent[]>>([]); // State to store total students count
+  const [loading, setLoading] = useState<boolean>(true);
 
   // Fetch total student count when the session is available
   useEffect(() => {
     const getStudents = async () => {
       if (!session?.user?.id) return; // Ensure userId exists
       const userId = session.user.id;
-
       try {
         const res = await fetch("/api/students", {
           headers: {
@@ -38,8 +40,8 @@ const Students = () => {
       } catch (error) {
         console.error("Error during fetch:", error);
       }
+      setLoading(false);
     };
-
     if (session?.user?.id) {
       getStudents();
     }
@@ -79,8 +81,21 @@ const Students = () => {
         <div className="h-[calc(100svh-70px)] w-full dark:bg-transparent bg-white  dark:bg-grid-white/[0.2] bg-grid-black/[0.2] relative flex items-center justify-center">
           {/* Radial gradient for the container to give a faded look */}
           <div className="absolute pointer-events-none inset-0 flex items-center justify-center dark:bg-transparent bg-white [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black)]"></div>
-          <p className="text-3xl sm:text-5xl font-bold relative z-20 bg-clip-text text-transparent bg-gradient-to-b from-neutral-200 to-neutral-500 py-8">
-            No students.
+          <p className="flex flex-col text-3xl sm:text-5xl font-bold relative z-20 bg-clip-text text-transparent bg-gradient-to-b from-neutral-200 to-neutral-500 py-8">
+            {loading ? (
+              <>Loading....</>
+            ) : (
+              <>
+                <span>No students.</span>
+                <Button
+                  className="bg-none hover:bg-transparent text-3xl"
+                  variant="ghost"
+                >
+                  <PlusIcon className="text-white/[0.4] text-3xl " />
+                  <span className="text-2xl">Create New Assignment</span>
+                </Button>
+              </>
+            )}
           </p>
         </div>
       )}

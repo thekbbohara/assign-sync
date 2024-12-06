@@ -73,15 +73,6 @@ export default function AssignmentsPage() {
           <div className="absolute pointer-events-none inset-0 flex items-center justify-center dark:bg-transparent bg-white [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black)]"></div>
           <p className="flex flex-col text-3xl sm:text-5xl font-bold relative z-20 bg-clip-text text-transparent bg-gradient-to-b from-neutral-200 to-neutral-500 py-8">
             <span>No Saved Assignment</span>
-            <Button
-              className="bg-none hover:bg-transparent text-3xl flex gap-2 group"
-              variant="ghost"
-            >
-              <PlusCircle className="text-white/[0.4] text-3xl group-hover:text-white" />
-              <Link href={"/dashboard/assignments/new"} className="text-2xl  ">
-                New Assignment
-              </Link>
-            </Button>
           </p>
         </div>
       )}

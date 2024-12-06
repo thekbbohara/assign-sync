@@ -87,13 +87,6 @@ const Students = () => {
             ) : (
               <>
                 <span>No students.</span>
-                <Button
-                  className="bg-none hover:bg-transparent text-3xl"
-                  variant="ghost"
-                >
-                  <PlusIcon className="text-white/[0.4] text-3xl " />
-                  <span className="text-2xl">Create New Assignment</span>
-                </Button>
               </>
             )}
           </p>

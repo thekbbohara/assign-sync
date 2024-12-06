@@ -79,7 +79,7 @@ const Students = () => {
         </Table>
       ) : (
         <GridBackground>
-          {loading ? <Loader /> : <span>No Saved Assignment</span>}
+          {loading ? <Loader /> : <span>No Students Yet.</span>}
         </GridBackground>
       )}
     </>

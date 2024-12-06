@@ -41,7 +41,7 @@ export default function ClassesPage() {
     }
   }, [userId, refresh]);
   return (
-    <div className={cn(classes.length >= 1 ? "p-6 space-y-6" : "p-0")}>
+    <div className={cn(classes.length >= 1 ? "p-6 space-y-6" : "pt-6")}>
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold">Classes</h1>
         <CreateClassDialog admin={userId} setRefresh={setRefresh} />
@@ -93,7 +93,7 @@ export default function ClassesPage() {
         </div>
       ) : (
         <GridBackground className="h-[calc(100svh-70px)] pt-1">
-          {loading ? <Loader /> : <span>No Saved Assignment</span>}
+          {loading ? <Loader /> : <span>No Class Joined/Created.</span>}
         </GridBackground>
       )}
     </div>

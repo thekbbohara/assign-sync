@@ -168,8 +168,16 @@ export default function ClassDetailPage() {
                 <Card key={String(assignment._id)}>
                   <CardHeader>
                     <CardTitle>{assignment.title}</CardTitle>
+
                     <CardDescription>
-                      Due: {assignment?.dueDate?.toString()}
+                      {`Due: ${
+                        assignment?.dueDate
+                          ? new Intl.DateTimeFormat("en-US", {
+                              month: "short",
+                              day: "numeric",
+                            }).format(new Date(assignment.dueDate))
+                          : "N/A"
+                      }`}
                     </CardDescription>
                   </CardHeader>
                   <CardContent>

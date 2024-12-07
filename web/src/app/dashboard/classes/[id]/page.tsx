@@ -134,7 +134,7 @@ export default function ClassDetailPage() {
                     className="flex justify-between items-center"
                   >
                     <TableCell className="font-medium">
-                      <div className="flex gap-2">
+                      <div className="flex gap-2 items-center">
                         <Avatar>
                           <AvatarImage src={student.user.avatar} />
                           <AvatarFallback>
@@ -147,7 +147,9 @@ export default function ClassDetailPage() {
                           </AvatarFallback>
                         </Avatar>
                         <div className="flex flex-col">
-                          <span>{student.user.name}</span>
+                          <span className="text-lg">
+                            {student?.user.name || student?.user?.username}
+                          </span>
                           <span>{student.user.email}</span>
                         </div>
                       </div>

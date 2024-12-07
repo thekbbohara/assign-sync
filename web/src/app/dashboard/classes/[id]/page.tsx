@@ -9,14 +9,6 @@ import {
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -31,6 +23,8 @@ import { IClass } from "@/model/class";
 import { useParams } from "next/navigation";
 import { IAssignment } from "@/model/assignment";
 import Link from "next/link";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { TableBody, TableCell, TableRow, Table } from "@/components/ui/table";
 export default function ClassDetailPage() {
   const [copied, setCopied] = useState(false);
   const [classDetail, setClassDetail] = useState<Partial<IClass>>({});
@@ -130,39 +124,41 @@ export default function ClassDetailPage() {
           <TabsTrigger value="assignments">Assignments</TabsTrigger>
         </TabsList>
         <TabsContent value="students">
-          <Card>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Email</TableHead>
-                  <TableHead>Joined</TableHead>
-                  <TableHead>Progress</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {classDetail.students &&
-                  classDetail.students.length >= 1 &&
-                  classDetail.students.map((student) => (
-                    <TableRow key={String(student?.user?._id)}>
-                      <TableCell>{student?.user?.name}</TableCell>
-                      <TableCell>{student?.user?.email}</TableCell>
-                      <TableCell>
-                        {student?.joinedAt
-                          ? new Date(student.joinedAt).toLocaleDateString(
-                              "en-CA",
+          <Table>
+            <TableBody>
+              {classDetail.students &&
+                classDetail.students.length >= 1 &&
+                classDetail.students.map((student, id) => (
+                  <TableRow
+                    key={String(student?.user?._id) ?? id}
+                    className="flex justify-between items-center"
+                  >
+                    <TableCell className="font-medium">
+                      <div className="flex gap-2">
+                        <Avatar>
+                          <AvatarImage src={student.user.avatar} />
+                          <AvatarFallback>
+                            {String(
+                              student?.user?.name ??
+                                (student?.user?.username || "AS"),
                             )
-                          : "today"}
-                      </TableCell>
-                      <TableCell>
-                        {student?.completedAssignments ?? "0"}/
-                        {student?.totalAssignments ?? ""} completed
-                      </TableCell>
-                    </TableRow>
-                  ))}
-              </TableBody>
-            </Table>
-          </Card>
+                              .toUpperCase()
+                              .substr(0, 2)}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div className="flex flex-col">
+                          <span>{student.user.name}</span>
+                          <span>{student.user.email}</span>
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <div>{Math.round(Math.random() * 50 + 30) + "%"}</div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+            </TableBody>
+          </Table>
         </TabsContent>
         <TabsContent value="assignments">
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">

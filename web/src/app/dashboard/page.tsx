@@ -1,4 +1,5 @@
 "use client";
+import { AchievementGrid } from "@/components/achivements/achievement-grid";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Book, Users, Clock } from "lucide-react";
 import { useSession } from "next-auth/react"; // Import useSession hook
@@ -90,6 +91,7 @@ const DashboardPage = () => {
           </CardContent>
         </Card>
       </div>
+      <AchievementGrid className="pt-4" />
     </div>
   );
 };

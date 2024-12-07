@@ -92,7 +92,7 @@ export default function ClassesPage() {
           ))}
         </div>
       ) : (
-        <GridBackground className="h-[calc(100svh-70px)] pt-1">
+        <GridBackground className="h-[calc(100svh-70px)] pt-4">
           {loading ? <Loader /> : <span>No Class Joined/Created.</span>}
         </GridBackground>
       )}

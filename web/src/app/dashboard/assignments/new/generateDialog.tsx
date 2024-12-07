@@ -1,14 +1,13 @@
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogFooter,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
-import { Stars } from "lucide-react";
+import { Stars, Loader } from "lucide-react"; // Use Loader for spinner
 import { useRef, useState } from "react";
 import { toast } from "sonner";
 
@@ -19,17 +18,49 @@ export const GeneratePrompt = ({
 }) => {
   const promptRef = useRef<HTMLTextAreaElement>(null);
   const [open, setOpen] = useState<boolean>(false);
+  const [isGenerating, setIsGenerating] = useState<boolean>(false);
+
+  const handleGenerate = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    const textarea = promptRef.current;
+
+    if (!textarea) {
+      toast.error("Something went wrong.");
+      return;
+    }
+
+    const prompt = textarea.value.trim();
+    if (!prompt) {
+      toast.error("Prompt cannot be empty.");
+      return;
+    }
+
+    setIsGenerating(true);
+    textarea.readOnly = true; // Disable editing
+    e.currentTarget.disabled = true; // Disable button during generation
+
+    try {
+      const success = await fn(prompt);
+      if (success) {
+        toast.success("Assignment generated successfully!");
+        setOpen(false); // Close the dialog
+      } else {
+        toast.error("Something went wrong!");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to generate assignment.");
+    } finally {
+      setIsGenerating(false);
+      textarea.readOnly = false;
+      e.currentTarget.disabled = false;
+    }
+  };
+
   return (
     <>
-      <Dialog open={open}>
-        <DialogTrigger>
-          <Button
-            className="flex gap-1"
-            onClick={() => {
-              console.log("generate assignment");
-              setOpen(true);
-            }}
-          >
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogTrigger asChild>
+          <Button className="flex gap-1">
             <Stars />
             <span>Generate</span>
           </Button>
@@ -45,22 +76,16 @@ export const GeneratePrompt = ({
           </div>
           <DialogFooter>
             <Button
-              className="flex gap-1"
-              onClick={async (e) => {
-                const textarea = promptRef.current;
-                if (!textarea) return toast.error("Something went wrong.");
-                const prompt = textarea.value;
-                textarea.readOnly = true;
-                e.currentTarget.disabled = true;
-                const res = await fn(prompt);
-                console.log(res);
-                if (res) {
-                  setOpen(false);
-                }
-              }}
+              className="flex gap-2 items-center"
+              onClick={handleGenerate}
+              disabled={isGenerating}
             >
-              <Stars />
-              <span>Generate</span>
+              {isGenerating ? (
+                <Loader className="animate-spin w-5 h-5" />
+              ) : (
+                <Stars />
+              )}
+              <span>{isGenerating ? "Generating..." : "Generate"}</span>
             </Button>
           </DialogFooter>
         </DialogContent>

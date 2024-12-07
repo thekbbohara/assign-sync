@@ -3,7 +3,7 @@ import {
   GoogleGenerativeAI,
   SchemaType,
 } from "@google/generative-ai";
-
+import { systemInstruction } from "./pepompt";
 export const generateAssignment = async (API_KEY: string, prompt: string) => {
   try {
     const genAI = new GoogleGenerativeAI(API_KEY);
@@ -80,13 +80,10 @@ export const generateAssignment = async (API_KEY: string, prompt: string) => {
 
     const model = genAI.getGenerativeModel({
       model: "gemini-1.5-flash",
+      systemInstruction: systemInstruction,
       generationConfig,
     });
-
-    // const prePrompt = "Keep the title short";
-    const prePrompt =
-      "Provide a detailed and structured coding assignment with the following: a concise title, clear description, specific requirements, examples, step-by-step instructions, test cases with unique id, a starter code template/function for student to use as a starting point, and a complete solution. Which should be json parsable.";
-    const result = await model.generateContent(`${prePrompt}. ${prompt}`);
+    const result = await model.generateContent(`${prompt}`);
 
     return result.response.text();
   } catch (error) {

@@ -44,14 +44,27 @@ export default function AssignmentsPage() {
             <Card key={String(assignment._id)}>
               <CardHeader>
                 <CardTitle>{assignment.title}</CardTitle>
-                <CardDescription>{assignment.description}</CardDescription>
+                <CardDescription>
+                  {assignment.description?.substr(
+                    0,
+                    Math.min(assignment.description.length, 100),
+                  ) +
+                    `${(assignment.description?.length ?? 0 > 100) ? "..." : ""}`}
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  <div className="flex items-center space-x-4 text-sm">
+                  <div className="flex justify-between items-center space-x-4 text-sm">
                     <div className="flex items-center text-muted-foreground">
                       <Timer className="mr-1 h-4 w-4" />
-                      Due {assignment?.dueDate?.toLocaleString()}
+                      {`Due: ${
+                        assignment?.dueDate
+                          ? new Intl.DateTimeFormat("en-US", {
+                              month: "short",
+                              day: "numeric",
+                            }).format(new Date(assignment.dueDate))
+                          : "N/A"
+                      }`}
                     </div>
                     <div className="flex items-center text-muted-foreground">
                       <Users className="mr-1 h-4 w-4" />

@@ -206,6 +206,7 @@ test('factorial of 5 is 120', () => {
               height="100%"
               defaultLanguage="javascript"
               theme="vs-dark"
+              language="javascript"
               value={code}
               onChange={(value) => setCode(value || "")}
               options={{

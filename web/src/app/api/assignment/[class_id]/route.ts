@@ -1,5 +1,5 @@
 import dbConnect from "@/lib/dbConnect";
-import Assignment from "@/model/assignment";
+import { Assignment } from "@/model/assignment";
 
 export const GET = async (
   req: Request,

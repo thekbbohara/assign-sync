@@ -108,7 +108,7 @@ export default function AssignmentDetailPage() {
     if (id) {
       fetchAssignment(id.toString());
     }
-  }, [id]);
+  }, [id, userId]);
 
   return (
     <div className="h-[calc(100vh-4rem)] p-4">
@@ -147,7 +147,7 @@ export default function AssignmentDetailPage() {
                         <div className="space-y-2">
                           <h4 className="font-medium">Requirements:</h4>
                           <ul className="list-disc pl-6 space-y-1">
-                            {assignment.requirements.map((req, id) => (
+                            {assignment.requirements.map(({ req }, id) => (
                               <li key={id}>{req}</li>
                             ))}
                           </ul>
@@ -162,7 +162,7 @@ factorial(5) // returns 120`}
                       </pre> */}
                       <ul className="list-disc pl-6 space-y-1">
                         {Array.isArray(assignment.examples) &&
-                          assignment.examples.map((eg, id) => (
+                          assignment.examples.map(({ eg }, id) => (
                             <li key={id}>{eg}</li>
                           ))}
                       </ul>

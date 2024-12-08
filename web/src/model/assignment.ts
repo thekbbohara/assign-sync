@@ -1,57 +1,121 @@
-import mongoose, { Schema, Document, Model, model, ObjectId } from "mongoose";
+import mongoose, { Schema, Document, Model, model } from "mongoose";
 
-// Define the TestCase schema
-const testCaseSchema = new Schema(
-  {
-    input: { type: String, required: true },
-    expected: { type: String, required: true },
-  },
-  { _id: false }, // Prevents Mongoose from creating an `_id` for each test case
-);
+export interface IExample extends Document {
+  eg: string;
+  assignmentId: Schema.Types.ObjectId;
+}
 
-// Define the IAssignment interface (optional, if you want to add typing)
+export interface IRequirement extends Document {
+  req: string;
+  assignmentId: Schema.Types.ObjectId;
+}
+
+export interface ITestCase extends Document {
+  input: string;
+  expected: string;
+  assignmentId: Schema.Types.ObjectId;
+}
+
+export interface ISubmission extends Document {
+  code: string;
+  user: Schema.Types.ObjectId;
+  assignmentId: Schema.Types.ObjectId;
+  submittedAt: Date;
+}
+
 export interface IAssignment extends Document {
   title: string;
   description: string;
-  requirements: string[];
-  examples: string[];
+  requirements: IRequirement[];
+  examples: IExample[];
   instructions: string;
   codeTemplate: string;
   dueDate: Date | undefined | null;
   class: Schema.Types.ObjectId;
   user: Schema.Types.ObjectId;
-  testCases: { input: string; expected: string }[];
-  submissions?: { code: string; user: ObjectId }[];
+  testCases: ITestCase[];
+  submissions?: ISubmission[];
   solution?: string;
 }
-// Define the Assignment Schema
+
+const exampleSchema = new Schema<IExample>(
+  {
+    eg: { type: String, required: true },
+    assignmentId: {
+      type: Schema.Types.ObjectId,
+      ref: "Assignment",
+      required: true,
+    },
+  },
+  { _id: false },
+);
+const requirementsSchema = new Schema<IRequirement>(
+  {
+    req: { type: String, required: true },
+    assignmentId: {
+      type: Schema.Types.ObjectId,
+      ref: "Assignment",
+      required: true,
+    },
+  },
+  { _id: false },
+);
+
+const testCasesSchema = new Schema<ITestCase>(
+  {
+    input: { type: String, required: true },
+    expected: { type: String, required: true },
+    assignmentId: {
+      type: Schema.Types.ObjectId,
+      ref: "Assignment",
+      required: true,
+    },
+  },
+  { _id: false },
+);
+
+const submissionsSchema = new Schema<ISubmission>(
+  {
+    code: { type: String, required: true },
+    user: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    assignmentId: {
+      type: Schema.Types.ObjectId,
+      ref: "Assignment",
+      required: true,
+    },
+    submittedAt: { type: Date, default: Date.now },
+  },
+  { _id: false },
+);
+
 const assignmentSchema = new Schema<IAssignment>(
   {
     title: { type: String, required: true },
     description: { type: String, required: true },
-    requirements: { type: [String], required: true }, // Array of strings
-    examples: { type: [String], default: [] }, // Array of example strings
     instructions: { type: String, required: true },
     codeTemplate: { type: String, required: true },
-    dueDate: { type: Date, required: false, default: null },
-    class: {
-      type: Schema.Types.ObjectId,
-      ref: "Class",
-      required: true,
-    },
-    user: { type: Schema.Types.ObjectId, ref: "User", required: true }, // Reference to the User model
-    testCases: { type: [testCaseSchema], required: true }, // Array of test cases
-    submissions: [
-      { code: String, user: { type: Schema.Types.ObjectId, ref: "User" } },
-    ],
+    dueDate: { type: Date, default: null },
+    class: { type: Schema.Types.ObjectId, ref: "Class", required: true },
+    user: { type: Schema.Types.ObjectId, ref: "User", required: true },
     solution: { type: String },
+    examples: [exampleSchema],
+    requirements: [requirementsSchema],
+    testCases: [testCasesSchema],
+    submissions: [submissionsSchema],
   },
-  { timestamps: true }, // Automatically add `createdAt` and `updatedAt` fields
+  { timestamps: true },
 );
 
-// Create and export the Assignment model
-const Assignment: Model<IAssignment> =
+export const Assignment: Model<IAssignment> =
   mongoose.models.Assignment ||
   model<IAssignment>("Assignment", assignmentSchema);
 
-export default Assignment;
+export const Example =
+  mongoose.models.Example || mongoose.model("Example", exampleSchema);
+export const Requirement =
+  mongoose.models.Requirement ||
+  mongoose.model("Requirement", requirementsSchema);
+export const TestCase =
+  mongoose.models.TestCase || mongoose.model("TestCase", testCasesSchema);
+export const Submission =
+  mongoose.models.Submission || mongoose.model("Submission", submissionsSchema);

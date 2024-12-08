@@ -104,7 +104,6 @@ export default function CreateAssignmentPage() {
       ),
     );
   };
-
   const handlePublish = async () => {
     // Check for required references
     if (
@@ -123,6 +122,21 @@ export default function CreateAssignmentPage() {
     const instructions = instructionsRef.current.value;
     const codeTemplate = codeTemplateRef.current.value;
     const solution = solutionRef.current.value;
+
+    // Ensure requirements, examples, testCases are properly structured
+    const reqs: { req: string }[] = requirements.map((req: string) => ({
+      req,
+    })); // Convert to objects
+    const egs: { eg: string }[] = examples.map((eg: string) => ({
+      eg,
+    }));
+    const tcs: { input: string; expected: string }[] = testCases.map(
+      ({ input, expected }: { input: string; expected: string }) => ({
+        input,
+        expected,
+      }),
+    ); // Convert to objects
+
     console.log({
       title,
       description,
@@ -130,7 +144,9 @@ export default function CreateAssignmentPage() {
       codeTemplate,
       solution,
       selectedClass,
+      userId,
     });
+
     // Check if all required fields are filled
     if (!title || !description || !codeTemplate || !selectedClass) {
       return toast.error("Please fill out all required fields.");
@@ -145,15 +161,15 @@ export default function CreateAssignmentPage() {
     const payload = {
       title,
       description,
-      requirements,
-      examples,
+      requirements: reqs,
+      examples: egs,
       instructions,
-      testCases,
+      testCases: tcs,
       codeTemplate,
       solution,
       dueDate,
-      class: selectedClass,
-      user: userId as unknown as ObjectId, // Use userId directly instead of headers
+      classId: selectedClass,
+      user: userId as unknown as ObjectId, // Ensure the userId is in the correct format
     };
 
     try {
@@ -165,6 +181,7 @@ export default function CreateAssignmentPage() {
         },
         body: JSON.stringify(payload),
       });
+
       const { err, msg } = await res.json();
 
       if (!err) {

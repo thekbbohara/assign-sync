@@ -38,55 +38,43 @@ export interface IAssignment extends Document {
   solution?: string;
 }
 
-const exampleSchema = new Schema<IExample>(
-  {
-    eg: { type: String, required: true },
-    assignmentId: {
-      type: Schema.Types.ObjectId,
-      ref: "Assignment",
-      required: true,
-    },
+const exampleSchema = new Schema<IExample>({
+  eg: { type: String, required: true },
+  assignmentId: {
+    type: Schema.Types.ObjectId,
+    ref: "Assignment",
+    required: true,
   },
-  { _id: false },
-);
-const requirementsSchema = new Schema<IRequirement>(
-  {
-    req: { type: String, required: true },
-    assignmentId: {
-      type: Schema.Types.ObjectId,
-      ref: "Assignment",
-      required: true,
-    },
+});
+const requirementsSchema = new Schema<IRequirement>({
+  req: { type: String, required: true },
+  assignmentId: {
+    type: Schema.Types.ObjectId,
+    ref: "Assignment",
+    required: true,
   },
-  { _id: false },
-);
+});
 
-const testCasesSchema = new Schema<ITestCase>(
-  {
-    input: { type: String, required: true },
-    expected: { type: String, required: true },
-    assignmentId: {
-      type: Schema.Types.ObjectId,
-      ref: "Assignment",
-      required: true,
-    },
+const testCasesSchema = new Schema<ITestCase>({
+  input: { type: String, required: true },
+  expected: { type: String, required: true },
+  assignmentId: {
+    type: Schema.Types.ObjectId,
+    ref: "Assignment",
+    required: true,
   },
-  { _id: false },
-);
+});
 
-const submissionsSchema = new Schema<ISubmission>(
-  {
-    code: { type: String, required: true },
-    user: { type: Schema.Types.ObjectId, ref: "User", required: true },
-    assignmentId: {
-      type: Schema.Types.ObjectId,
-      ref: "Assignment",
-      required: true,
-    },
-    submittedAt: { type: Date, default: Date.now },
+const submissionsSchema = new Schema<ISubmission>({
+  code: { type: String, required: true },
+  user: { type: Schema.Types.ObjectId, ref: "User", required: true },
+  assignmentId: {
+    type: Schema.Types.ObjectId,
+    ref: "Assignment",
+    required: true,
   },
-  { _id: false },
-);
+  submittedAt: { type: Date, default: Date.now },
+});
 
 const assignmentSchema = new Schema<IAssignment>(
   {
@@ -98,10 +86,10 @@ const assignmentSchema = new Schema<IAssignment>(
     class: { type: Schema.Types.ObjectId, ref: "Class", required: true },
     user: { type: Schema.Types.ObjectId, ref: "User", required: true },
     solution: { type: String },
-    examples: [exampleSchema],
-    requirements: [requirementsSchema],
-    testCases: [testCasesSchema],
-    submissions: [submissionsSchema],
+    examples: [{ type: Schema.Types.ObjectId, ref: "Example" }],
+    requirements: [{ type: Schema.Types.ObjectId, ref: "Requirement" }],
+    testCases: [{ type: Schema.Types.ObjectId, ref: "TestCase" }],
+    submissions: [{ type: Schema.Types.ObjectId, ref: "Submission" }],
   },
   { timestamps: true },
 );

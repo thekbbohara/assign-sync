@@ -6,7 +6,6 @@ import {
   Assignment,
   type IAssignment,
 } from "@/model/assignment";
-import mongoose from "mongoose";
 
 // export const POST = async (req: Request) => {
 //   const assignment = await req.json();
@@ -27,119 +26,119 @@ import mongoose from "mongoose";
 //   }
 // };
 
-// export const POST = async (req: Request) => {
-//   const assignment = await req.json();
-//   console.log("payloads", assignment);
-//   const {
-//     title,
-//     description,
-//     instructions,
-//     codeTemplate,
-//     classId,
-//     user,
-//     solution,
-//     examples,
-//     requirements,
-//     testCases,
-//     dueDate,
-//   } = assignment;
-//   // Validate required fields
-//   if (
-//     !title ||
-//     !description ||
-//     !instructions ||
-//     !codeTemplate ||
-//     !classId ||
-//     !user
-//   ) {
-//     return Response.json({ err: true, msg: "Missing required fields" });
-//   }
-//   try {
-//     // Connect to the database
-//     await dbConnect();
-//     const newAssignment = new Assignment({
-//       title,
-//       description,
-//       instructions,
-//       codeTemplate,
-//       class: classId,
-//       user,
-//       solution: solution ?? "",
-//       dueDate: dueDate ?? null,
-//     });
-//     console.log("newAssignments", { newAssignment });
-//     // await newAssignment.save();
-//     const assignmentId = newAssignment._id;
-//     //save examples
-//     if (examples) {
-//       console.log("saving examples...");
-//       try {
-//         // Map the examples to include the assignmentId
-//         const exampleDocs = examples.map((example: { eg: string }) => ({
-//           eg: example.eg,
-//           assignmentId,
-//         }));
-//         // Insert the examples into the database
-//         const result = await Example.insertMany(exampleDocs);
-//         console.log("Examples saved result:", result);
-//         const exampleIds = result.map((doc) => doc._id);
-//         console.log("example ids:", exampleIds);
-//         newAssignment.examples = exampleIds;
-//       } catch (error) {
-//         console.error("Error saving examples:", error);
-//       }
-//     }
-//     //save requirements
-//     if (requirements) {
-//       console.log("saving requirements...");
-//       try {
-//         // Map the requirements to include the assignmentId
-//         const requirementDocs = requirements.map((req: { req: string }) => ({
-//           req: req.req,
-//           assignmentId: assignmentId,
-//         }));
-//         // Insert the requirements into the database
-//         const result = await Requirement.insertMany(requirementDocs);
+export const POST = async (req: Request) => {
+  const assignment = await req.json();
+  // console.log("payloads", assignment);
+  const {
+    title,
+    description,
+    instructions,
+    codeTemplate,
+    classId,
+    user,
+    solution,
+    examples,
+    requirements,
+    testCases,
+    dueDate,
+  } = assignment;
+  // Validate required fields
+  if (
+    !title ||
+    !description ||
+    !instructions ||
+    !codeTemplate ||
+    !classId ||
+    !user
+  ) {
+    return Response.json({ err: true, msg: "Missing required fields" });
+  }
+  try {
+    // Connect to the database
+    await dbConnect();
+    const newAssignment = new Assignment({
+      title,
+      description,
+      instructions,
+      codeTemplate,
+      class: classId,
+      user,
+      solution: solution ?? "",
+      dueDate: dueDate ?? null,
+    });
+    // console.log("newAssignments", { newAssignment });
+    // await newAssignment.save();
+    const assignmentId = newAssignment._id;
+    //save examples
+    if (examples) {
+      console.log("saving examples...");
+      try {
+        // Map the examples to include the assignmentId
+        const exampleDocs = examples.map((example: { eg: string }) => ({
+          eg: example.eg,
+          assignmentId,
+        }));
+        // Insert the examples into the database
+        const result = await Example.insertMany(exampleDocs);
+        console.log("Examples saved result:", result);
+        const exampleIds = result.map((doc) => doc._id);
+        console.log("example ids:", exampleIds);
+        newAssignment.examples = exampleIds;
+      } catch (error) {
+        console.error("Error saving examples:", error);
+      }
+    }
+    //save requirements
+    if (requirements) {
+      // console.log("saving requirements...");
+      try {
+        // Map the requirements to include the assignmentId
+        const requirementDocs = requirements.map((req: { req: string }) => ({
+          req: req.req,
+          assignmentId: assignmentId,
+        }));
+        // Insert the requirements into the database
+        const result = await Requirement.insertMany(requirementDocs);
 
-//         console.log("requirements saved", result);
-//         const requirementIds = result.map((doc) => doc._id);
-//         console.log("requirementIds", requirementIds);
-//         newAssignment.requirements = requirementIds;
-//       } catch (error) {
-//         console.error("Error saving requirements:", error);
-//       }
-//     }
-//     // save testCases
-//     if (testCases) {
-//       try {
-//         // Map the testCases to include the assignmentId
-//         const testCaseDocs = testCases.map(
-//           (testCase: { input: string; expected: string }) => ({
-//             input: testCase.input,
-//             expected: testCase.expected,
-//             assignmentId: assignmentId,
-//           }),
-//         );
-//         // Insert the testcases into the database
-//         const result = await TestCase.insertMany(testCaseDocs);
-//         // console.log("Examples saved:", result);
-//         const testCaseIds = result.map((doc) => doc._id);
-//         newAssignment.testCases = testCaseIds;
-//       } catch (error) {
-//         console.error("Error saving examples:", error);
-//       }
-//     }
-//     // Save the Assignment document
-//     await newAssignment.save();
-//     return Response.json({
-//       err: false,
-//       msg: "Assignment Created Successfully.",
-//     });
-//   } catch (error) {
-//     console.log("Error creating assignment:", error);
-//     return Response.json({ err: true, msg: "Unable to save Assignment" });
-//   }
-// };
+        // console.log("requirements saved", result);
+        const requirementIds = result.map((doc) => doc._id);
+        console.log("requirementIds", requirementIds);
+        newAssignment.requirements = requirementIds;
+      } catch (error) {
+        console.error("Error saving requirements:", error);
+      }
+    }
+    // save testCases
+    if (testCases) {
+      try {
+        // Map the testCases to include the assignmentId
+        const testCaseDocs = testCases.map(
+          (testCase: { input: string; expected: string }) => ({
+            input: testCase.input,
+            expected: testCase.expected,
+            assignmentId: assignmentId,
+          }),
+        );
+        // Insert the testcases into the database
+        const result = await TestCase.insertMany(testCaseDocs);
+        // console.log("Examples saved:", result);
+        const testCaseIds = result.map((doc) => doc._id);
+        newAssignment.testCases = testCaseIds;
+      } catch (error) {
+        console.error("Error saving examples:", error);
+      }
+    }
+    // Save the Assignment document
+    await newAssignment.save();
+    return Response.json({
+      err: false,
+      msg: "Assignment Created Successfully.",
+    });
+  } catch (error) {
+    console.log("Error creating assignment:", error);
+    return Response.json({ err: true, msg: "Unable to save Assignment" });
+  }
+};
 
 // export const POST = async (req: Request) => {
 //   const assignment = await req.json();

@@ -1,6 +1,7 @@
 import { generateInviteCode } from "@/lib/geneateInviteCode";
 import { model, models, ObjectId, Schema } from "mongoose";
 import { IUser } from "./user";
+import { HydratedDocument } from "mongoose";
 
 export interface IStudent extends IUser {
   _id: ObjectId;
@@ -42,7 +43,7 @@ const classSchema = new Schema<IClass>(
   { timestamps: true },
 );
 
-classSchema.pre("save", async function (next) {
+classSchema.pre("save", async function (this: HydratedDocument<IClass>, next) {
   const classDoc = this;
 
   if (!classDoc.inviteCode) {
